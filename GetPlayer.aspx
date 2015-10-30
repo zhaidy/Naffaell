@@ -16,7 +16,7 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">游戏ID</label>
                 <div class="col-sm-10">
-                    <asp:TextBox ID="txtPlayerId" runat="server" Text="zz雨" CssClass="form-control"></asp:TextBox>
+                    <asp:TextBox ID="txtPlayerId" runat="server" Text="我不是个善良的人" CssClass="form-control"></asp:TextBox>
                 </div>
             </div>
             <div class="form-group">

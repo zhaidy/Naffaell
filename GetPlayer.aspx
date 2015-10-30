@@ -9,7 +9,32 @@
                 <label class="col-sm-2 control-label">服务器</label>
                 <div class="col-sm-10">
                     <asp:DropDownList ID="dpServer" runat="server" CssClass="form-control">
-                        <asp:ListItem Value="网通一">比尔吉沃特</asp:ListItem>
+                        <asp:ListItem Value="电信一">艾欧尼亚</asp:ListItem>
+                        <asp:ListItem Value="电信二">祖安</asp:ListItem>
+                        <asp:ListItem Value="电信三">诺克萨斯</asp:ListItem>
+                        <asp:ListItem Value="电信四">班德尔城</asp:ListItem>
+                        <asp:ListItem Value="电信五">皮尔特沃夫</asp:ListItem>
+                        <asp:ListItem Value="电信六">战争学院</asp:ListItem>
+                        <asp:ListItem Value="电信七">巨神峰</asp:ListItem>
+                        <asp:ListItem Value="电信八">雷瑟守备</asp:ListItem>
+                        <asp:ListItem Value="电信九">裁决之地</asp:ListItem>
+                        <asp:ListItem Value="电信十">黑色玫瑰</asp:ListItem>
+                        <asp:ListItem Value="电信十一">暗影岛</asp:ListItem>
+                        <asp:ListItem Value="电信十二">钢铁烈阳</asp:ListItem>
+                        <asp:ListItem Value="电信十三">水晶之痕</asp:ListItem>
+                        <asp:ListItem Value="电信十四">均衡教派</asp:ListItem>
+                        <asp:ListItem Value="电信十五">影流</asp:ListItem>
+                        <asp:ListItem Value="电信十六">守望之海</asp:ListItem>
+                        <asp:ListItem Value="电信十七">征服之海</asp:ListItem>
+                        <asp:ListItem Value="电信十八">卡拉曼达</asp:ListItem>
+                        <asp:ListItem Value="电信十九">皮城警备</asp:ListItem>
+                        <asp:ListItem Value="网通一" Selected="True">比尔吉沃特</asp:ListItem>
+                        <asp:ListItem Value="网通二">德玛西亚</asp:ListItem>
+                        <asp:ListItem Value="网通三">弗雷尔卓德</asp:ListItem>
+                        <asp:ListItem Value="网通四">无畏先锋</asp:ListItem>
+                        <asp:ListItem Value="网通五">怒瑞玛</asp:ListItem>
+                        <asp:ListItem Value="网通六">扭曲丛林</asp:ListItem>
+                        <asp:ListItem Value="网通七">巨龙之巢</asp:ListItem>
                     </asp:DropDownList>
                 </div>
             </div>

@@ -35,6 +35,7 @@ public partial class GetPlayer : System.Web.UI.Page
         _server = dpServer.SelectedValue;
         string server = System.Web.HttpUtility.UrlEncode(dpServer.SelectedValue, System.Text.Encoding.UTF8);
         string playerId = System.Web.HttpUtility.UrlEncode(txtPlayerId.Text, System.Text.Encoding.UTF8);
+
         sendRequest(server, playerId);
         parseHtml(server, playerId);
     }
@@ -187,7 +188,6 @@ public partial class GetPlayer : System.Web.UI.Page
         }
 
         //get normal statistics
-
         IEnumerable<HtmlNode> tableNodes = htmlDocument.DocumentNode.Descendants().Where(x => x.Name == "table");
         foreach (HtmlNode table in tableNodes)
         {

@@ -29,7 +29,7 @@ public class GetPlayer : System.Web.Services.WebService {
     }
 
     [WebMethod]
-    public player_profile PlayerProfile(string server, string playerId)
+    public player_profile GetPlayerProfile(string server, string playerId)
     {
         string _playerId = playerId;
         string _server = server;
@@ -86,7 +86,7 @@ public class GetPlayer : System.Web.Services.WebService {
     }
 
     [WebMethod]
-    public com_heros ComHeros(string server, string playerId)
+    public com_heros GetComHeros(string server, string playerId)
     {
         string _playerId = playerId;
         string _server = server;

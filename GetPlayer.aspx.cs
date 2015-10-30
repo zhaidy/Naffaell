@@ -15,11 +15,11 @@ using System.Windows.Forms;
 
 public partial class GetPlayer : System.Web.UI.Page
 {
-    public IList<fighting> _fighting = new List<fighting>(); //战斗力 : update_datetime, fighting
-    public IList<com_hero> _com_hero = new List<com_hero>(); //常用英雄 : name, count
+    public IList<com_champ> _com_champ = new List<com_champ>(); //常用英雄 : name, count
     public IList<player_profile> _player_profile = new List<player_profile>(); //Player Profile : player_id, server, fighting
     public IList<normal_statistics> _normal_statistics = new List<normal_statistics>(); //normal statistics
     public IList<rank_statistics> _rank_statistics = new List<rank_statistics>(); //rank statistics
+    public IList<match_list> _match_list = new List<match_list>(); //match_list
     string _playerId = "";
     string _server = "";
     string tier = "";
@@ -124,11 +124,6 @@ public partial class GetPlayer : System.Web.UI.Page
         foreach (HtmlNode child in fightingNodes)
         {
             HtmlNode node = child.SelectSingleNode("//span");
-            _fighting.Add(new fighting
-            {
-                update_datetime = Regex.Match(child.OuterHtml, "....-..-.. ..:..:..").Value,
-                _fighting = Regex.Match(child.InnerText, @"\d+").Value
-            });
             fighting = Regex.Match(child.InnerText, @"\d+").Value;
         }
 
@@ -175,7 +170,7 @@ public partial class GetPlayer : System.Web.UI.Page
                     string _count = Regex.Match(Regex.Match(node.InnerHtml, @"\d次").Value, @"\d").Value;
                     if (node.Attributes.Contains("champion-name-ch"))
                     {
-                        _com_hero.Add(new com_hero
+                        _com_champ.Add(new com_champ
                         {
                             champion_name_ch = node.Attributes["champion-name-ch"].Value,
                             champion_name = node.Attributes["champion-name"].Value,
@@ -246,21 +241,45 @@ public partial class GetPlayer : System.Web.UI.Page
 
         HtmlNode matchHistorybodyNode = doc.DocumentNode.SelectSingleNode("//body");
 
-        //战斗力 : update_datetime, fighting
-        //IEnumerable<HtmlNode> fightingNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
-        //    && x.Attributes["class"].Value.Split().Contains("fighting"));
-        //foreach (HtmlNode child in fightingNodes)
-        //{
-        //}
+        //match_list
+        IEnumerable<HtmlNode> historyNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
+            && x.Attributes["class"].Value.Split().Contains("l-box"));
+        foreach (HtmlNode child in historyNodes)
+        {
+            foreach (HtmlNode ul in child.SelectNodes("ul"))
+            {
+                foreach (HtmlNode li in ul.SelectNodes("li"))
+                {
+                    string id = li.Attributes["id"].Value.Substring(3);
+                    HtmlNode championSpan = li.SelectSingleNode("span[@class='avatar']");
+                    string icon = Regex.Match(championSpan.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                    string champion_name_ch = championSpan.SelectSingleNode("img").Attributes["title"].Value;
+                    string status = li.SelectSingleNode("p").SelectSingleNode("em").InnerText;
+                    string mode = li.SelectSingleNode("//span[@class='game']").InnerText;
+                    string date = Regex.Replace(li.SelectSingleNode("//p[@class='info']").LastChild.InnerText, @"\s", "").Replace("&nbsp;", "");
+                    _match_list.Add(new match_list
+                    {
+                        id = id,
+                        icon = icon,
+                        champion_name_ch = champion_name_ch,
+                        status = status,
+                        mode = mode,
+                        date = date
+                    });
+                }
+            }
+        }
 
-        GridView1.DataSource = _player_profile;
-        GridView1.DataBind();
-        GridView2.DataSource = _com_hero;
-        GridView2.DataBind();
-        GridView3.DataSource = _normal_statistics;
-        GridView3.DataBind();
-        GridView4.DataSource = _rank_statistics;
-        GridView4.DataBind();
+        gvPlayerProfile.DataSource = _player_profile;
+        gvPlayerProfile.DataBind();
+        gvComChamp.DataSource = _com_champ;
+        gvComChamp.DataBind();
+        gvNormalStat.DataSource = _normal_statistics;
+        gvNormalStat.DataBind();
+        gvRankStat.DataSource = _rank_statistics;
+        gvRankStat.DataBind();
+        gvMatchList.DataSource = _match_list;
+        gvMatchList.DataBind();
     }
     public class player_profile
     {
@@ -291,16 +310,20 @@ public partial class GetPlayer : System.Web.UI.Page
         public string matches_lost { get; set; }
         public string update_datetime { get; set; }
     }
-    public class fighting
-    {
-        public string update_datetime { get; set; }
-        public string _fighting { get; set; }
-    }
-    public class com_hero
+    public class com_champ
     {
         public string champion_name_ch { get; set; }
         public string champion_name { get; set; }
         public string icon { get; set; }
         public string count { get; set; }
+    }
+    public class match_list
+    {
+        public string id { get; set; }
+        public string champion_name_ch { get; set; }
+        public string icon { get; set; }
+        public string status { get; set; }
+        public string mode { get; set; }
+        public string date { get; set; }
     }
 }

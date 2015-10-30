@@ -104,6 +104,7 @@ public partial class GetPlayer : System.Web.UI.Page
     private void parseHtml(string server, string playerId)
     {
         string url = "http://lolbox.duowan.com/playerDetail.php?serverName=" + server + "&playerName=" + playerId;
+        string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
         string fighting = "";
         string level = "";
         string playerIcon = "";
@@ -195,7 +196,7 @@ public partial class GetPlayer : System.Web.UI.Page
                 HtmlNodeCollection cell = row.SelectNodes("td");
                 if (cell != null)
                 {
-                    if (cell.Count == 6)
+                    if (cell.Count == 6) //normal
                     {
                         _normal_statistics.Add(new normal_statistics
                         {
@@ -207,7 +208,7 @@ public partial class GetPlayer : System.Web.UI.Page
                             update_datetime = cell[5].InnerText
                         });
                     }
-                    if (cell.Count == 8)
+                    if (cell.Count == 8) //current season
                     {
                         _rank_statistics.Add(new rank_statistics
                         {
@@ -221,9 +222,37 @@ public partial class GetPlayer : System.Web.UI.Page
                             update_datetime = cell[7].InnerText
                         });
                     }
+                    if (cell.Count == 7) //history
+                    {
+                        _rank_statistics.Add(new rank_statistics
+                        {
+                            type = cell[0].InnerText,
+                            rank = "",
+                            point = "",
+                            total_matches = cell[3].InnerText,
+                            win_rate = cell[4].InnerText,
+                            matches_winned = cell[5].InnerText,
+                            matches_lost = cell[6].InnerText,
+                            update_datetime = ""
+                        });
+                    }
                 }
             }
         }
+
+
+        var getMatchHistoryWeb = new HtmlWeb();
+        var doc = getMatchHistoryWeb.Load(matchListUrl);
+
+        HtmlNode matchHistorybodyNode = doc.DocumentNode.SelectSingleNode("//body");
+
+        //战斗力 : update_datetime, fighting
+        //IEnumerable<HtmlNode> fightingNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
+        //    && x.Attributes["class"].Value.Split().Contains("fighting"));
+        //foreach (HtmlNode child in fightingNodes)
+        //{
+        //}
+
         GridView1.DataSource = _player_profile;
         GridView1.DataBind();
         GridView2.DataSource = _com_hero;

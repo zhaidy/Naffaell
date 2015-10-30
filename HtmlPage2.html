@@ -1,1023 +1,271 @@
 ﻿
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
-<head>
-    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>zz雨的召唤师详情</title>
-    <meta name="description" content="" />
-    <meta name="keywords" content="" />
-    <link rel="stylesheet" href="images/egg_popup/egg_popup.css" />
-    <link rel="stylesheet" href="http://assets.dwstatic.com/project/lolbox/2.12.2/css/global.css" />
-    <link rel="stylesheet" href="http://assets.dwstatic.com/project/lolbox/2.12.2/css/mycard.css" />
-    <script src="http://www.duowan.com/public/assets/sys/js/jquery.js"></script>
-    <script src="http://www.duowan.com/public/assets/sys/js/dww3.min.js"></script>
-    <script>
-
-        if (typeof Array.prototype.join != 'function') {
-            // implement join for IE6
-            Array.prototype.join = function (str) {
-                var out = '';
-                for (var i = 0; i < this.length; i++) {
-                    if (i > 0) out += str;
-                    out += this[i];
-                }
-                return out;
-            };
-        }
-
-        var js$yyuid = "";
-        function loadSubscription(div) {
-            if (div.find('.rss-count').html() == "") {
-                div.find('.rss-count').html('0');
-                var aid = div.attr('yyaid');
-                $.get("http://lolbox.duowan.com/yyLiveCertifiedAnchorSubscribe.php?stamp=" + (new Date()).getTime() + "&aid=" + aid + "&uid=" + js$yyuid, function (data) {
-                    if (data) {
-                        var result = eval('(' + data + ')');
-                        if (result['subscribed']) {
-                            div.addClass('brocast-rssed');
-                        }
-                        else {
-                            div.removeClass('brocast-rssed');
-                        }
-                        div.find('.rss-count').html(result['count']);
-                    }
-                });
-            }
-        }
-        function doSubscription(div) {
-            if (js$yyuid == "") {
-                location.href = "lolbox://LoginYY";
-            }
-            else {
-                var aid = div.attr('yyaid');
-                if (!div.hasClass('.brocast-rssed')) {
-                    $.get("http://lolbox.duowan.com/yyLiveCertifiedAnchorSubscribe.php?stamp=" + (new Date()).getTime() + "&op=subscribe&aid=" + aid + "&uid=" + js$yyuid, function (data) {
-                        if (data) {
-                            var result = eval('(' + data + ')');
-                            if (result['subscribed']) {
-                                div.addClass('brocast-rssed');
-                            }
-                            else {
-                                div.removeClass('brocast-rssed');
-                            }
-                            div.find('.rss-count').html(result['count']);
-                        }
-                    });
-                }
-                else {
-                    $.get("http://lolbox.duowan.com/yyLiveCertifiedAnchorSubscribe.php?stamp=" + (new Date()).getTime() + "&op=unsubscribe&aid=" + aid + "&uid=" + js$yyuid, function (data) {
-                        if (data) {
-                            var result = eval('(' + data + ')');
-                            if (result['subscribed']) {
-                                div.addClass('brocast-rssed');
-                            }
-                            else {
-                                div.removeClass('brocast-rssed');
-                            }
-                            div.find('.rss-count').html(result['count']);
-                        }
-                    });
-                }
-            }
-        }
-        function prepareCertifiedLiveAnchorHover() {
-            $("body").delegate('.brocast-vip', 'mouseenter', function (event) {
-                var menu = $(this).find(".mod-tips-s3");
-                if ($(window).height() - event.clientY < menu.height()) {
-                    $(this).addClass('brocast-vip-top');
-                    menu.css('margin-top', '-' + menu.height() - 30 + 'px');
-                }
-                $(this).css('z-index', 101).find('.mod-tips-s3').show();
-                /* Act on the event */
-                loadSubscription($(this).find('.brocast-rss'));
-            });
-            $("body").delegate('.brocast-vip', 'mouseleave', function (event) {
-                // console.log( event );
-                var _this = $(this);
-                window.brocastSign = setTimeout(function () {
-                    _this.css('z-index', 100).find('.mod-tips-s3').hide();
-                }, 200)
-                /* Act on the event */
-            });
-            $("body").delegate('.mod-tips-s3', 'mouseenter', function (event) {
-                //alert(window.brocastSign);
-                clearTimeout(window.brocastSign);
-                /* Act on the event */
-            });
-        }
-        $(function () {
-            prepareCertifiedLiveAnchorHover();
-        });
-
-        var js$certifiedLiveAnchors = null;
-        function loadCertifiedLiveAnchors() {
-            $.get("http://lolbox.duowan.com/yyLiveCertifiedAnchorMapData.php?data-request=json", function (data) {
-                if (data) {
-                    js$certifiedLiveAnchors = eval('(' + data + ')');
-                }
-            });
-        }
-
-        function getPlayerNames() {
-            return $("#playerNames").text();
-        }
-
-        function getRowIndexByPlayerName(playerName) {
-            var rowIdx = -1;
-            var playerNames = getPlayerNames();
-            if (playerNames) {
-                var playerNamesList = playerNames.split('|');
-
-                for (rowIdx = 0; rowIdx < playerNamesList.length; rowIdx++) {
-                    if (playerNamesList[rowIdx] === playerName) {
-                        return rowIdx;
-                    }
-                }
-            }
-            return rowIdx;
-        }
-
-        function htmlCertifiedLiveAnchorIcon(nickname) {
-            if (js$certifiedLiveAnchors) {
-                var anchor = js$certifiedLiveAnchors[nickname];
-                if (anchor) {
-                    var applyClassNames = [];
-                    applyClassNames.push("brocast-vip");
-                    applyClassNames.push('brocast-vip-type' + anchor['level']);
-
-                    var idx = getRowIndexByPlayerName(nickname);
-                    if (idx > 5) {
-                        applyClassNames.push('brocast-vip-top');
-                    }
-
-                    var html =
-                    '<span class="' + applyClassNames.join(' ') + '">' +
-                        '<i></i>' +
-                        '<div class="mod-tips-s3 hide">' +
-                            '<div class="mod-tips-content">' +
-                                '<p style="overflow:hidden;white-space:nowrap;text-overflow:ellipsis;"><em>主播：</em>' + anchor['yynick'] + '</p>' +
-                                '<p><em>频道：</em>' + anchor['channel'] + '</p>' +
-                                '<p><em>认证：</em>' + anchor['tag'] + '</p>' +
-                                '<div class="brocast-rss" yyaid="' + anchor['yyaid'] + '" onclick="doSubscription($(this))" style="cursor:pointer"><strong class="rss-count"></strong></div>' +
-                            '</div>' +
-                            '<i class="arrow t"></i>' +
-                            '<span class="tag"></span>' +
-                        '</div>' +
-                    '</span>';
-                    return html;
-                }
-            }
-            return '';
-        }
-
-        function addAnchorIconsToMatchList() {
-            for (var playerName in js$certifiedLiveAnchors) {
-                $('#matchDetail').find('.team-name').each(function () {
-                    var playerNameGot = decodeURIComponent($(this).find('.avatar').attr('data-playerName'));
-                    if (playerNameGot == playerName) {
-                        $(this).find('a').after(htmlCertifiedLiveAnchorIcon(playerName));
-                    }
-                });
-            }
-        }
-    </script>
-    <link rel="stylesheet" href="http://img.lolbox.duowan.com/global.css?v=20130118" />
-    <link rel="stylesheet" href="http://wan.duowan.com/static/css/god-icons.css" />
-    <style>
-        html, body {
-            overflow: hidden;
-        }
-
-        #windownbg {
-            display: none;
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            top: 0;
-            left: 0;
-        }
-
-        #windown-box {
-            position: fixed;
-            _position: absolute;
-            border: 5px solid #E9F3FD;
-            background: #FFF;
-            text-align: left;
-        }
-
-        #windown-title {
-            position: relative;
-            height: 30px;
-            border: 1px solid #A6C9E1;
-            overflow: hidden;
-            background: url(images/tipbg.png) 0 0 repeat-x;
-        }
-
-            #windown-title h2 {
-                position: relative;
-                left: 10px;
-                top: 5px;
-                font-size: 14px;
-                color: #666;
-            }
-
-        #windown-close {
-            position: absolute;
-            right: 10px;
-            top: 8px;
-            width: 10px;
-            height: 16px;
-            text-indent: -10em;
-            overflow: hidden;
-            background: url(images/tipbg.png) 100% -49px no-repeat;
-            cursor: pointer;
-        }
-
-        #windown-content-border {
-            position: relative;
-            top: -1px;
-            border: 1px solid #A6C9E1;
-            padding: 5px 0 5px 5px;
-        }
-
-        #windown-content img, #windown-content iframe {
-            display: block;
-        }
-
-        #windown-content .loading {
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            margin-left: -8px;
-            margin-top: -8px;
-        }
-    </style>
-
-    <script type="text/javascript">
-        var topHost = document.referrer;
-        if (topHost != null && topHost.indexOf('duowan.com') < 0 && topHost.indexOf('yy.com') < 0 && topHost.indexOf('yy.tv') < 0 && topHost.indexOf("5153.com") < 0) {
-            if (top.location !== self.location) {
-                top.location = self.location;
-            }
-        }
-    </script>
-</head>
-<body scroll='no'>
-    <div class="box">
-        <div class="box-hd">
-            <div class="fl crumbs">
-                <div style='float:left;'>
-                    <a href="playerSearch.php">战绩查询</a><span>&gt;</span><a href="playerDetail.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8">zz雨                    （比尔吉沃特）</a><span>&gt;</span>个人信息
-                </div>
-            </div>
-            <div style="float:left;margin-left:10px">
-            </div>
-            <!--分享模块 start -->
-            <div class="btns-fast">
-                <a title="返回" href="javascript:history.back();" onfocus="this.blur();" class="icons"><i></i></a>
-
-                <div class="share">
-                    <a class="icons" href="#"><i></i></a>
-
-                    <div class="links">
-                        <a class="button_tsina" href="#"><span>新浪微博</span></a>
-                        <a class="button_tqq" href="#"><span>腾讯微博</span></a>
-                        <a class="button_qzone" href="#"><span>QQ空间</span></a>
-                        <a class="screenshot" href="javascript:screenshot();"><span>本页截图</span></a>
-                        <a class="copy-link" href="javascript:window.clipboardData.setData('Text',window.location.href);alert('链接复制成功');"><span>复制链接</span></a>
-                    </div>
-                </div>
-                <script type="text/javascript" src="js/sns_share.js?v=2012091201" charset="utf-8"></script>
-                <script type="text/javascript">
-                    var playerMostUsedHero = null;
-                    playerMostUsedHero = "Kassadin"; var jiathis_config = {
-                        title: "#无盒子 不开撸# 我是zz雨，我在使用LOL盒子。来看看我的战斗力有多少吧！",
-                        appkey: {
-                            "tsina": "3629014272",
-                            "tqq": "801220649",
-                            "qzone": "100302822"
-                        },
-                        summary: " ",
-                        ralateuid: {
-                            "tsina": "2909042820"
-                        }
-                    };
-                    if (playerMostUsedHero)
-                        jiathis_config.pic = 'http://lolbox.duowan.com/images/champions/' + playerMostUsedHero + '_120x120.png';
-                    if (SnsShare) SnsShare.init();
-                </script>
-                <a title="刷新" class="icons refresh" onfocus="this.blur();" href="javascript:location.reload();"><i></i></a>
-            </div>
-            <script>
-                function screenshot() {
-                    $('.share').removeClass('hover');
-                    setTimeout(function () {
-                        window.location.href = 'lolboxphoto://网通一_zz雨_玩家详情';
-                    }, 200);
-                }
-                $('.box .box-hd .btns-fast .share').hover(function () {
-                    $(this).addClass('hover');
-                }, function () {
-                    $(this).removeClass('hover');
-                });
-            </script>
-            <!--分享模块 end -->
+<div class="box">
+    <div class="box-hd">
+        <div class="fl crumbs">
+            <a href="/playerSearch.php">战绩查询</a><span>&gt;</span>
+            <a href="/playerDetail.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8">zz雨                （比尔吉沃特）</a>
+            <span>&gt;</span>战斗日志
         </div>
-        <div class="box-bd">
-            <div class="intro">
-                <div class="avatar">
-                    <a href="matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8">
-                        <img src="http://img.lolbox.duowan.com/profileIcon/profileIcon23.jpg" />
-                    </a>
-                    <span></span>
-                    <em>30</em>
+        <span style="float:left"> <a style="margin-left:15px" href="/favorateMatchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8">TA的收藏</a> </span>
+
+        <div class="btns-fast">
+            <a title="返回" href="javascript:history.back();" onfocus="this.blur();" class="icons"><i></i></a>
+
+            <div class="share">
+                <a class="icons" href="#"><i></i></a>
+
+                <div class="links">
+                    <a class="button_tsina" href="#"><span>新浪微博</span></a>
+                    <a class="button_tqq" href="#"><span>腾讯微博</span></a>
+                    <a class="button_qzone" href="#"><span>QQ空间</span></a>
+                    <a class="screenshot" href="javascript:screenshot();"><span>本页截图</span></a>
+                    <a class="copy-link" href="javascript:window.clipboardData.setData('Text',window.location.href);alert('链接复制成功');"><span>复制链接</span></a>
                 </div>
-                <div class="text">
-                    <div>
-                        <strong>
-                            <a id="playerNameLink"
-                               href="playerDetail.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8"
-                               title="zz雨">zz雨</a>
-                            <a title="扫描二维码"
-                               href="qrcode.php?openmode=barcode&serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8"
-                               target="_blank"><img alt="扫描二维码" src="images/barcode.png?v=3"></a>
-                        </strong>
-                    </div>
-                    <div title="此玩家在游戏中被队友给的好评数，只有使用lol盒子的玩家才可以进行评价">被赞 471 次</div>
-                </div>
-                <div class="fighting" title='点击查看战斗力详细计算方法'>
-                    <p>
-                        <strong><a href='http://lol.duowan.com/1112/187633871943.html?&openmode=default' target='_blank' style='color:white;cursor: help;'>战斗力</a></strong>
+            </div>
+            <a title="刷新" href="javascript:location.reload();" onfocus="this.blur();" class="icons refresh"><i></i></a>
+        </div>
+
+    </div>
+    <div class="box-bd">
+        <div class="l-box">
+            <ul>
+                <li id="cli15499011065">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/Chogath_40x40.jpg" alt="虚空恐惧" title="虚空恐惧" />
+                    </span>
+
+                    <p><em class="green">胜利</em></p>
+
+                    <p class="info">
+                        <span class="game">克隆赛</span>&nbsp;10-29
                     </p>
+                </li>
 
-                    <p><em><span title='更新时间：2015-10-29 13:53:26'>5623</span></em></p>
-                </div>
+                <li id="cli15496963717">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/Lux_40x40.jpg" alt="光辉女郎" title="光辉女郎" />
+                    </span>
+
+                    <p><em class="green">胜利</em></p>
+
+                    <p class="info">
+                        <span class="game">克隆赛</span>&nbsp;10-29
+                    </p>
+                </li>
+
+                <li id="cli15486681212">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/Zed_40x40.jpg" alt="影流之主" title="影流之主" />
+                    </span>
+
+                    <p><em class="green">胜利</em></p>
+
+                    <p class="info">
+                        <span class="game">克隆赛</span>&nbsp;10-28
+                    </p>
+                </li>
+
+                <li id="cli15483261966">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/MonkeyKing_40x40.jpg" alt="齐天大圣" title="齐天大圣" />
+                    </span>
+
+                    <p><em class="green">胜利</em></p>
+
+                    <p class="info">
+                        <span class="game">克隆赛</span>&nbsp;10-28
+                    </p>
+                </li>
+
+                <li id="cli15482915755">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/Kindred_40x40.jpg" alt="永猎双子" title="永猎双子" />
+                    </span>
+
+                    <p><em class="red">失败</em></p>
+
+                    <p class="info">
+                        <span class="game">克隆赛</span>&nbsp;10-28
+                    </p>
+                </li>
+
+                <li id="cli15473651159">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/Malphite_40x40.jpg" alt="熔岩巨兽" title="熔岩巨兽" />
+                    </span>
+
+                    <p><em class="green">胜利</em></p>
+
+                    <p class="info">
+                        <span class="game">克隆赛</span>&nbsp;10-27
+                    </p>
+                </li>
+
+                <li id="cli15473017024">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/Draven_40x40.jpg" alt="荣耀行刑官" title="荣耀行刑官" />
+                    </span>
+
+                    <p><em class="green">胜利</em></p>
+
+                    <p class="info">
+                        <span class="game">克隆赛</span>&nbsp;10-27
+                    </p>
+                </li>
+
+                <li id="cli15462438824">
+                    <span class="avatar">
+
+                        <img src="http://img.lolbox.duowan.com/champions/Blitzcrank_40x40.jpg" alt="蒸汽机器人" title="蒸汽机器人" />
+                    </span>
+
+                    <p><em class="green">胜利</em></p>
+
+                    <p class="info">
+                        <span class="game">匹配赛</span>&nbsp;10-26
+                    </p>
+                </li>
+
+            </ul><div class="zj-page">
+                <a href="#" class="zj-prev zj-s disable" title="上一页"></a>
+                <input type="text" class="zj-cur" value="1" />
+                <span class="page-num"> / 8</span>
+                <a href="#" class="go-page">GO</a>
+                <a href="/matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8&page=2" class="zj-next zj-s" title="下一页"></a>
             </div>
+        </div>
 
-            <div class="com-hero">
-                <h3>常用英雄</h3>
-                <a href="/playerDetail/championsStat/championsStat.html?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8" class="more-detail">更多&gt;&gt;</a>
-
-                <ul class="mod-pic" id="com-hero">
-                    <li champion-name-ch="虚空行者" champion-name="Kassadin">
-                        <a href="/matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8&hero=Kassadin">
-                            <img src="http://img.lolbox.duowan.com/champions/Kassadin_40x40.jpg"
-                                 alt="虚空行者 6 次 点击查看相关比赛"
-                                 title="虚空行者 6次">
-                        </a>
-                    </li>
-                    <li champion-name-ch="蒸汽机器人" champion-name="Blitzcrank">
-                        <a href="/matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8&hero=Blitzcrank">
-                            <img src="http://img.lolbox.duowan.com/champions/Blitzcrank_40x40.jpg"
-                                 alt="蒸汽机器人 2 次 点击查看相关比赛"
-                                 title="蒸汽机器人 2次">
-                        </a>
-                    </li>
-                    <li champion-name-ch="琴瑟仙女" champion-name="Sona">
-                        <a href="/matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8&hero=Sona">
-                            <img src="http://img.lolbox.duowan.com/champions/Sona_40x40.jpg"
-                                 alt="琴瑟仙女 2 次 点击查看相关比赛"
-                                 title="琴瑟仙女 2次">
-                        </a>
-                    </li>
-                    <li champion-name-ch="战争女神" champion-name="Sivir">
-                        <a href="/matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8&hero=Sivir">
-                            <img src="http://img.lolbox.duowan.com/champions/Sivir_40x40.jpg"
-                                 alt="战争女神 1 次 点击查看相关比赛"
-                                 title="战争女神 1次">
-                        </a>
-                    </li>
-                    <li champion-name-ch="酒桶" champion-name="Gragas">
-                        <a href="/matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8&hero=Gragas">
-                            <img src="http://img.lolbox.duowan.com/champions/Gragas_40x40.jpg"
-                                 alt="酒桶 1 次 点击查看相关比赛"
-                                 title="酒桶 1次">
-                        </a>
-                    </li>
-                </ul>
+        <div class="r-box">
+            <div id="matchDetail">
+                <img src="images/loading.gif" width="400" height="400" />
             </div>
+            <div id="a2Ad" class="mod-share" style="height:28px !important;line-height:28px !important;padding:1px 0px !important">
+                <!--<span class="comment"><a href="#">评论(3)</a></span></span>-->
+                <script src="http://gt.yy.com/api/g?loc= oldhza2"></script>
+                <script src="http://sz.duowan.com/resource/adstat.1.0.0.js"></script>
 
-
-            <div id="tab1" class="mod-tabs">
-                <div class="mod-tabs-hd">
-                    <ul class="mod-tabs-trigger J_nav">
-                        <li class="selected">匹配模式</li>
-                        <li onclick="loadRankedData('zz雨', '网通一');">2015赛季</li>
-                        <li onclick="loadEloRanks('zz雨', '网通一');">
-                            战斗力评估
-                        </li>
-                        <li id="nav_wan" style="color:#FF0000; font-weight:500;" class="hide">大神陪玩</li>
-                        <li id="nav_mbox" data-stat="oper:mboxTabClick" class="hide"></li>
-
-                        <li id="huyaAppTab">手机虎牙</li>
-
-                    </ul>
-                    <div class="act">
-                        &nbsp;
-                        首胜:5小时24分
-                    </div>
-                </div>
-
-                <div class="mod-tabs-bd J_content">
-                    <div class="mod-tabs-content">
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                            <tr>
-                                <th scope="col">类型</th>
-                                <th scope="col">总场次</th>
-                                <th scope="col">胜率</th>
-                                <th scope="col">胜场</th>
-                                <th scope="col">负场</th>
-                                <th scope="col" style="width:100px">更新时间</th>
-                            </tr>
-                            <tr>
-                                <td>经典模式</td>
-                                <td>
-                                    712
-                                </td>
-                                <td>50.3%</td>
-                                <td>358</td>
-                                <td>354</td>
-                                <td>10-26 22:28</td>
-
-                            </tr>
-                            <tr>
-                                <td>阵容模式</td>
-                                <td>
-                                    1
-                                </td>
-                                <td>0%</td>
-                                <td>0</td>
-                                <td>1</td>
-                                <td>07-06 21:03</td>
-
-                            </tr>
-                            <tr>
-                                <td>人机对战</td>
-                                <td>
-                                    313
-                                </td>
-                                <td>98.4%</td>
-                                <td>308</td>
-                                <td>5</td>
-                                <td>10-26 00:19</td>
-                            </tr>
-                            <tr>
-                                <td>大乱斗</td>
-                                <td>
-                                    457
-                                </td>
-                                <td>52.5%</td>
-                                <td>240</td>
-                                <td>217</td>
-                                <td>10-26 21:53</td>
-                            </tr>
-
-                        </table>
-                    </div>
-
-                    <div class="mod-tabs-content hide">
-                        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                            <tr>
-                                <th scope="col">类型</th>
-                                <th scope="col">段位/级别</th>
-                                <th scope="col">胜点</th>
-                                <th scope="col">总场次</th>
-                                <th scope="col">胜率</th>
-                                <th scope="col">胜场</th>
-                                <th scope="col">负场</th>
-                                <th scope="col" style="width:100px">更新时间</th>
-                            </tr>
-
-                            <tr><td>5v5单双排</td><td id='ranked_tier'>-</td><td id='ranked_league_points'>-</td><td>141</td><td>51.8%</td><td>73</td><td>68</td><td>10-14 01:14</td></tr>
-                            <tr><td align="center">历史排位 :</td><td></td><td></td><td>134</td><td>51%</td><td>68</td><td>66</td></tr>
-                        </table>
-                    </div>
-                    <div class="mod-tabs-content hide">
-                        <div class="combat-assess">
-                            <p class="info">
-                                <a href='http://fankui.duowan.com/knowledgebase/articles/208098?&openmode=default' target='_blank' style='cursor: help;'>算法</a>
-                                5623 = 3135(基础分) + 1282(胜率分)
-                                + 1206(胜场分)
-                            </p>                    <div class="combat-assess-content">
-                                <p style="padding-left:50px;padding-top:5px;color:red">请通过排位赛来提升个人战斗力</p>
-
-                                <p class="less-than-tip">
-                                    <a target="_blank" href="http://fankui.duowan.com/knowledgebase/articles/208098?&openmode=default">2015赛季战斗力算法详细解释</a>
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mod-tabs-content hide" id="content_wan">
-                        loading
-                    </div>
-                    <div class="mod-tabs-content hide" id="content_mbox">
-                    </div>
-
-                    <div class="mod-tabs-content hide" id="content_mobile_huya_promotion">
-                        <!-- 虎牙推广 -->
-                        <div class="huya-ad-v2">
-                            <img src="" class="huya-ad-pic" id="huyaAdPic" />
-                            <div class="huya-ad-info">
-                                <div class="huya-ad-info-inner">
-                                    <img src="" class="appCode" id="huyaAppCode">
-                                    <a href="http://kiwi.pad.yy.com/apk/live4pclbzhanji.apk" class="dw-btn">下载虎牙直播</a>
-                                    <div class="txt-list">
-                                        <ul>
-                                            <li>大神美女全天候直播<b></b></li>
-                                            <li>千万网友吐槽互动，趣味竞猜<b></b></li>
-                                            <li>个性推送热门直播<b></b></li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <!-- }虎牙推广 -->
-
-                        <script src="http://assets.dwstatic.com/project/lolbox/2.12.2/js/jquery.cookie.js"></script>
-                        <script src="http://assets.dwstatic.com/project/lolbox/2.12.2/js/huya_app_spread.js"></script>
-                    </div>
-                </div>
-            </div>
-            <script>
-                KISSDW.tabs("#tab1");
-            </script>
-            <div class="clearfix">
-                <div class="recent bd-r fl">
-                    <div class="recent-hd">
-                        <h3>最近比赛</h3>
-                        <a href="matchList.php?serverName=%E7%BD%91%E9%80%9A%E4%B8%80&playerName=zz%E9%9B%A8">更多战报&gt;&gt;</a>
-                    </div>
-                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                        <tr>
-                            <th scope="col">英雄</th>
-                            <th scope="col">模式</th>
-                            <th scope="col">结果</th>
-                            <th scope="col">时间</th>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="http://img.lolbox.duowan.com/champions/Zed_24x24.jpg" title="影流之主"
-                                     alt="">
-                            </td>
-                            <td>克隆赛</td>
-                            <td><em class="green">胜利</em></td>
-                            <td>10-28 22:24                        </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="http://img.lolbox.duowan.com/champions/MonkeyKing_24x24.jpg" title="齐天大圣"
-                                     alt="">
-                            </td>
-                            <td>克隆赛</td>
-                            <td><em class="green">胜利</em></td>
-                            <td>10-28 18:53                        </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="http://img.lolbox.duowan.com/champions/Kindred_24x24.jpg" title="永猎双子"
-                                     alt="">
-                            </td>
-                            <td>克隆赛</td>
-                            <td><em class="red">失败</em></td>
-                            <td>10-28 18:21                        </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="http://img.lolbox.duowan.com/champions/Malphite_24x24.jpg" title="熔岩巨兽"
-                                     alt="">
-                            </td>
-                            <td>克隆赛</td>
-                            <td><em class="green">胜利</em></td>
-                            <td>10-27 21:39                        </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="http://img.lolbox.duowan.com/champions/Draven_24x24.jpg" title="荣耀行刑官"
-                                     alt="">
-                            </td>
-                            <td>克隆赛</td>
-                            <td><em class="green">胜利</em></td>
-                            <td>10-27 21:04                        </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="http://img.lolbox.duowan.com/champions/Blitzcrank_24x24.jpg" title="蒸汽机器人"
-                                     alt="">
-                            </td>
-                            <td>匹配赛</td>
-                            <td><em class="green">胜利</em></td>
-                            <td>10-26 22:28                        </td>
-                        </tr>
-                        <tr>
-                            <td>
-                                <img src="http://img.lolbox.duowan.com/champions/Malphite_24x24.jpg" title="熔岩巨兽"
-                                     alt="">
-                            </td>
-                            <td>大乱斗</td>
-                            <td><em class="green">胜利</em></td>
-                            <td>10-26 21:53                        </td>
-                        </tr>
-                    </table>
-                </div>
-                <div class="recent fr">
-                    <div id="a3Ad" class="td-code clearfix" style="padding:6px 0 0 12px;">
-
-                        <script src="http://gt.yy.com/api/g?loc= oldhza3"></script>
-                        <script src="http://sz.duowan.com/resource/adstat.1.0.0.js"></script>
-
-                        <script type="text/javascript" src="http://sz.duowan.com/s/ya/ya.1.3.1-min.js"></script>
-                        <script>
-                            //lolbox游戏广告统计，调用接口发送到海度
-                            $(document).ready(function () {
-                                $("#dw-counter").click(function () {
-                                    var href = $(this).attr('href');
-                                    var reg = new RegExp('^lolbox', 'gi');
-                                    if (reg.test(href)) {
-                                        var gReg = new RegExp("\/.*?([\?])", 'i');
-                                        var result = gReg.exec(href);
-                                        if (result) {
-                                            var gameid = [];
-                                            for (var i = result.index + 1; i < href.length; i++) {
-                                                if (href[i] == '?') {
-                                                    break;
-                                                } else {
-                                                    gameid.push(href[i]);
-                                                }
-                                            }
-                                            var gameId = gameid.join('');
-                                            gameId = gameId.split('/')[2];
+                <script type="text/javascript" src="http://sz.duowan.com/s/ya/ya.1.3.1-min.js"></script>
+                <script>
+                    //lolbox游戏广告统计，调用接口发送到海度
+                    $(document).ready(function () {
+                        $("#dw-counter").click(function () {
+                            var href = $(this).attr('href');
+                            var reg = new RegExp('^lolbox', 'gi');
+                            if (reg.test(href)) {
+                                var gReg = new RegExp("\/.*?([\?])", 'i');
+                                var result = gReg.exec(href);
+                                if (result) {
+                                    var gameid = [];
+                                    for (var i = result.index + 1; i < href.length; i++) {
+                                        if (href[i] == '?') {
+                                            break;
                                         } else {
-                                            var gameId = 'null';
+                                            gameid.push(href[i]);
                                         }
-                                    } else {
-                                        var gameId = 'null';
                                     }
-                                    var yySourceIndex = "A3";
-                                    var source = "A3广告位";
-                                    var serverId = "null";
+                                    var gameId = gameid.join('');
+                                    gameId = gameId.split('/')[2];
+                                } else {
+                                    var gameId = 'null';
+                                }
+                            } else {
+                                var gameId = 'null';
+                            }
 
-                                    var yyuid = "";
-                                    var username = "zz雨";
+                            var yySourceIndex = "A2";
+                            var source = "A2广告位";
+                            var serverId = "null";
 
-                                    this.ya = new YA.report.YYAnalytics('boxgame', yyuid, '');//yyuid为空，则传空串 ''
-                                    var data = {
-                                        pro: "yygame_300",
-                                        rso: "FROM_LOLBOX",
-                                        pas: username, //// username为空，则传空串 ''
-                                        rso_desc: "LOL盒子"
-                                    };
-                                    console.log(data);
-                                    this.ya.reportProductStartUp(data, '');
-                                    var data = { eid: "click/lolbox/zjtab/" + yySourceIndex, eid_desc: "点击/LOL盒子/战绩tab/" + source, pro: "yygame_300", gam: gameId, gse: serverId };
-                                    console.log(data);
-                                    this.ya.reportProductEvent(data, '');
+                            var yyuid = "";
+                            var username = "zz雨";
 
-                                });
-                            });
+                            this.ya = new YA.report.YYAnalytics('boxgame', yyuid, '');//yyuid为空，则传空串 ''
+                            var data = {
+                                pro: "yygame_300",
+                                rso: "FROM_LOLBOX",
+                                pas: username, //// username为空，则传空串 ''
+                                rso_desc: "LOL盒子"
+                            };
 
-                        </script>
-                    </div>
-                </div>
+                            this.ya.reportProductStartUp(data, '');
+                            var data = { eid: "click/lolbox/zjtab/" + yySourceIndex, eid_desc: "点击/LOL盒子/战绩tab/" + source, pro: "yygame_300", gam: gameId, gse: serverId };
+                            this.ya.reportProductEvent(data, '');
+
+                        });
+                    });
+
+                </script>
             </div>
         </div>
     </div>
 
+    <!-- 成就分享{ -->
+    <div class="mod-tips-s3 ach-share hide">
+        <div class="mod-tips-content">
+            <div class="txt"><strong></strong></div>
+            <div id="ckepop" class="clearfix">
+                <span class="jiathis_txt">分享到：</span>
+                <a class="button_tsina">
+                    <span class="hide">新浪微博</span>
+                </a>
+                <a class="button_tqq">
+                    <span class="hide">腾讯微博</span>
+                </a>
+                <a class="button_qzone">
+                    <span class="hide">QQ空间</span>
+                </a>
+            </div>
+        </div>
+        <i class="arrow t"></i>
+    </div>
+    <!-- }成就分享 -->
+
     <div id="__dvCompute" style="font-size:12px;position:absolute;visibility:hidden"></div>
-    <script type="text/javascript">
-        function StrRangeCompute(str) {
-            var d = document.getElementById('__dvCompute');
-            d.innerHTML = str;
-            return { w: d.offsetWidth, h: d.offsetHeight };
-        }
-        function normalizePlayerName(playerName) {
-            var maxWidth = 96;
-            var range = StrRangeCompute(playerName);
-            if (range.w > maxWidth) {
-                var p = playerName[0];
-                for (var i = 1; i < playerName.length; i++) {
-                    var _range = StrRangeCompute(p + playerName[i])
-                    if (_range.w > maxWidth)
-                        return p + '...';
-                    else
-                        p = p + playerName[i];
-                }
-            }
-            return playerName;
-        }
-        var playerName = $('.intro #playerNameLink').text();
-        if (playerName)
-            $('.intro #playerNameLink').text(normalizePlayerName($('.intro #playerNameLink').text()));
-    </script>
 
-    <script type="text/javascript">
-        _hiido_no = 0;
-        _hiido_wid = ["lbox"];
-
-        function getCookie(cookieName) {
-            var cookieString = document.cookie;
-            var start = cookieString.indexOf(cookieName + '=');
-            // 加上等号的原因是避免在某些 Cookie 的值里有
-            // 与 cookieName 一样的字符串。
-            if (start == -1) // 找不到
-                return null;
-            start += cookieName.length + 1;
-            var end = cookieString.indexOf(';', start);
-            if (end == -1)
-                return cookieString.substring(start);
-            return cookieString.substring(start, end);
-        }
-        function beenBlockedTimes(action) {
-            var boxPlayerName = decodeURI(getCookie('boxPlayerName'));
-            var boxServerName = decodeURI(getCookie('boxServerName'));
-            //alert(action + boxServerName + boxPlayerName);
-            $.ajax(
-                {
-                    url: "webApi.php",
-                    data: { serverName: boxServerName, playerName: boxPlayerName, action: action },
-                    cache: false,
-                    success: function (msg) {
-                        //	alert(msg);
-                        if (msg == 1) {
-                            location.reload();
-
-                        } else if (msg == -1) {
-                            alert('非法操作，请至少登陆一次游戏！');
-                        }
-
-                    },
-                    error: function () {
-                    }
-                });
-        }
-
-
-        function focusPlayers(targetServerName, targetPlayerName, action) {
-            var boxPlayerName = decodeURI(getCookie('boxPlayerName'));
-            var boxServerName = decodeURI(getCookie('boxServerName'));
-            $.ajax(
-                {
-                    url: "webApi.php",
-                    data: { serverName: boxServerName, playerName: boxPlayerName, targetServerName: targetServerName, targetPlayerName: targetPlayerName, action: action },
-                    cache: false,
-                    success: function (msg) {
-                        if (msg == '11') {
-                            location.reload();
-
-                        } else if (msg == -1) {
-                            alert('非法操作，请至少登陆一次游戏！');
-                        }
-
-                    },
-                    error: function () {
-                    }
-                });
-        }
-
-        var playerEloRanksLoaded = false;
-
-        function loadEloRanks(playerName, serverName) {
-            if (playerEloRanksLoaded == true)
-                return;
-
-            $.getJSON('ajaxGetPlayerEolRanks.php', { playerName: encodeURIComponent(playerName), serverName: encodeURIComponent(serverName) }, function (data) {
-                if (data) {
-                    $('#zdlRank').text(data.zdlRank ? '第' + data.zdlRank + '位' : '无');
-                    $('#eloRanksRS5').text(data.eloRanks.R_S_5 ? '第' + data.eloRanks.R_S_5 + '位' : '无');
-                }
-            });
-
-            playerEloRanksLoaded = true;
-        }
-        var playerRankedDataLoaded = false;
-        function loadRankedData(playerName, serverName) {
-            if (playerRankedDataLoaded == true)
-                return;
-            $.getJSON('ajaxGetWarzone.php', { playerName: encodeURIComponent(playerName), serverName: encodeURIComponent(serverName) }, function (data) {
-                if (data) {
-                    var text = data.tier == null ? "" : data.tier;
-                    text += (data.tier == null || data.rank == null) ? "" : "/";
-                    text += data.rank == null ? "" : data.rank;
-                    text = text == "" ? "-" : text;
-                    $('#ranked_tier').html('<span title="更新时间:' + data.warzone_updated + '">' + text + '</span>');
-                    if (data.league_points)
-                        $('#ranked_league_points').text(data.league_points);
-                }
-            });
-
-            playerEloRanksLoaded = true;
-        }
-    </script>
-
-    <script type="text/javascript">
-        var stat_app_name = "mbox"; //标记来源app,用英文字母
-        var stat_oper_default = false;// 表示不统计pv,uv
-        //var stat_uid = "xxx";
-    </script>
-    <script src="http://assets.dwstatic.com/amkit/entry.js"></script>
-    <script>
-        seajs.use("p/statistics/main", function () {
-            $('#a3Ad a').each(function () {
-                if (!$(this).attr('data-stat')) return;
-                var words = $(this).attr('data-stat').split('_');
-                words[2] += '展示';
-                webUserOper.spStat({ app: stat_app_name, oper: words.join('_'), tar: $(this).find('img').attr('src') });
-            });
-        });
-    </script>
-
-    <script src="http://www.duowan.com/duowan.js" type="text/javascript"></script>
-
-    <script src="http://assets.dwstatic.com/wan/E7BD91E9809AE4B880.js?03" type="text/javascript"></script>
-
-    <script type="text/javascript">
-        var curServerName = "网通一";
-        var curPlayerName = "zz雨";
-    </script>
-    <!--手机盒子引入的js-->
-    <link rel="stylesheet" href="http://assets.dwstatic.com/project/lolbox/2.10.0/css/mycard.css?v=21" />
-    <script type="text/javascript">
-        var mboxTabShownCookie = "mboxTabShown";
-    </script>
-    <script src="http://assets.dwstatic.com/sundry/mbox/mbox.js?v=38" type="text/javascript"></script>
-
-
-    <!-- 最近常用英雄 -->
-    <script src="js/detailTooltip.js" type="text/javascript"></script>
-    <script src="js/playerDetail.js" type="text/javascript"></script>
-
-    <script type="text/javascript">
-        function click_egg() {
-            var timestamp = (new Date()).valueOf();
-            var date = new Date();
-            date.setTime(date.getTime() + (1 * 24 * 60 * 60 * 1000));
-            document.cookie = " 20140930 = " + Math.floor(timestamp / 1000) + ";expires=" + date.toGMTString();
-            //window.open('http://szhuodong.duowan.com/s/lolbox/index.html?openmode=gameactivity');
-            window.open('http://g.duowan.com/boxstore/index?openrso=boxgame&tag=hzjs2&openmode=boxgame');
-            window.location.reload();
-        }
-        function now_close_egg() {
-            $("#smashingEgg").hide();
-            $("#egg_close_confirm").show();
-        }
-    </script>
-    <script src="/js/egg.js" type="text/javascript"></script>
-    <script type='text/javascript'>smashingEgg.show({ pageX: 'right', pageY: 'center', offsetTop: '0', offsetLeft: '0' });</script><div id="egg_close_confirm">
-
-        <div class="egg_first_line">
-            <img id="YYxiong" src="/images/egg_popup/YYxiong.png">
-
-            <div id="egg_close_png" class="egg_close_png_default"></div>
-            <span class="egg_label1">您确定要关闭盒子集市吗？</span>
+    <div id="phone-user-pop">
+        <div class="phone-user-con">
         </div>
-        <div class="egg_inline">
-            <span id="egg_png_checkbox" class="egg_png_checkbox_click egg_png_checkbox_default"></span>
-            <input type="hidden" id="egg_confirmcheckbox" name="confirmclose" value="0"><span class="egg_png_checkbox_click egg_label2">不再弹出集市</span>
-
-            <div class="egg_label3">您将失去领取金币兑换大奖的机会喔！</div>
-        </div>
-        <div id="egg_close_button">
-            <span id="egg_confirm_button"></span>
-            <span id="egg_cancel_button"></span>
-        </div>
-        <script type="text/javascript">
-            $(".egg_png_checkbox_click").click(function () {
-                var egg_click = $('#egg_confirmcheckbox').attr('value');
-                if (egg_click == 0) {
-                    $("#egg_png_checkbox").removeClass('egg_png_checkbox_default');
-                    $("#egg_png_checkbox").addClass('egg_png_checkbox_hover');
-                    $('#egg_confirmcheckbox').attr('value', '1');
-                } else {
-                    $("#egg_png_checkbox").removeClass('egg_png_checkbox_hover');
-                    $("#egg_png_checkbox").addClass('egg_png_checkbox_default');
-                    $('#egg_confirmcheckbox').attr('value', '0');
-                }
-
-            });
-            $("#egg_close_png").click(function () {
-                $("#egg_close_confirm").hide();
-                $("#smashingEgg").show();
-            });
-            $("#egg_cancel_button").click(function () {
-                $("#egg_close_confirm").hide();
-                $("#smashingEgg").show();
-            });
-            $("#egg_confirm_button").click(function () {
-                var egg_click = $('#egg_confirmcheckbox').attr('value');
-                if (egg_click == '1') {
-                    var timestamp = (new Date()).valueOf();
-                    var date = new Date();
-                    date.setTime(date.getTime() + (1024 * 24 * 60 * 60 * 1000));
-                    document.cookie = " egg_close_20140930 = " + Math.floor(timestamp / 1000) + ";expires=" + date.toGMTString();
-                }
-                $("#smashingEgg").remove();
-                $("#egg_close_confirm").hide();
-                var timestamp = (new Date()).valueOf();
-                var date = new Date();
-                date.setTime(date.getTime() + (4 * 24 * 60 * 60 * 1000));
-                document.cookie = " 20140930 = " + Math.floor(timestamp / 1000) + ";expires=" + date.toGMTString();
-                window.location.reload();
-            });
-
-
-            //手机盒子调用的js
-            var mboxTabShownCookie = "mboxTabShown";
-            var mboxVersion = getCookie(mboxTabShownCookie);
-            var boxPlayerName = decodeURI(getCookie('boxPlayerName'));
-            var boxServerName = decodeURI(getCookie('boxServerName'));
-
-            var noticeTitle = "超多软妹视频认证 单身狗都玩疯了！";
-            var noticeHref = "http://kuaikan.duowan.com/";
-            var appDesc = "手机盒子改名为“多玩饭盒”啦，看游戏视频，约妹子，尽在多玩饭盒。";
-            $("#nav_mbox").click(function () {
-                var exdate = new Date();
-                exdate.setDate(exdate.getDate() + 30);
-                document.cookie = mboxTabShownCookie + "=" + mboxVersion + ";expires=" + exdate.toGMTString();
-                $("#redIcon").remove();
-            });
-        </script>
-
     </div>
 
     <div class="hide">
-        <p id="serverName">网通一</p>
-
-        <p id="snFull">比尔吉沃特</p>
-
-        <p id="playerName">zz雨</p>
+        <span id="serverName">网通一</span>
+        <span id="playerName">zz雨</span>
+        <span id="isInMyFavorite">0</span>
     </div>
 
-    <div class="heropage-hero-tooltips" id="heropage-hero-tooltips"
-         style="display:none;">
-        <div class="heropage-hero-tooltips__wrap">
-            <i class="tooltips-arrow"></i>
+    <script type="text/javascript" src="/js/heroesList.js?v=1"></script>
+    <script type="text/javascript" src="/js/zbItems.js?v=1"></script>
 
-            <div class="heropage-hero-tooltips__hd">
-                <div class="avatar">
-                    <img src="http://art.yypm.com/40x40" alt="placeholder" />
-                </div>
-                <div class="cont">
-                    <span class="name">匿名</span>
+    <!-- 大神陪玩认证 icon -->
+    <script src="http://assets.dwstatic.com/wan/E7BD91E9809AE4B880.js?08" type="text/javascript"></script>
 
-                    <div class="game-info">
-                        <em class="data-winRate">99%</em>胜 / <em class="data-matchStat">999</em>场
-                    </div>
-                </div>
-            </div>
-            <div class="heropage-hero-tooltips__bd">
-                <ul class="info-list">
-                    <li>
-                        <i></i>
-                        <span class="label">场均KDA：</span>
-                        <em class="data-averageKDA-rating">9</em>
-                    </li>
-                    <li>
-                        <i></i>
-                        <span class="label">场均杀死助：</span>
-                        <em class="data-averageKDA">9/9/9</em>
-                    </li>
-                    <li>
-                        <i></i>
-                        <span class="label">场均分钟输出：</span>
-                        <em class="data-averageDamage">999</em>
-                        (<em class="data-averageDamage-rating">超越99%玩家</em>)
-                    </li>
-                    <li>
-                        <i></i>
-                        <span class="label">场均分钟经济：</span>
-                        <em class="data-averageEarn">99.9k</em>
-                        (<em class="data-averageEarn-rating">超越30%玩家</em>)
-                    </li>
-                    <li>
-                        <i></i>
-                        <span class="label">场均10分钟补兵：</span>
-                        <em class="data-averageMinionsKilled">99</em>
-                    </li>
-                </ul>
-            </div>
-            <div class="heropage-hero-tooltips__ft">
-                <a href="javascript:void(0)" class="copy">复制</a>
-                <a href="javascript:void(0)" class="screenshot"><i class="line"></i>截图</a>
+    <!-- 广告/游戏相关-->
+    <script>
+        var stat_app_name = "boxgame_matchlist";
+        var stat_uid = getLOLBoxYYUID();
+        var stat_oper_default = false;
+    </script>
+    <script src="http://assets.dwstatic.com/f=amkit/entry.js"></script>
 
-                <div class="share-link hide">
-                    <i class="line"></i>
-                    <span class="label">分享到：</span>
-                    <a href="javascript:void(0)" class="item3 tqq"></a>
-                    <a href="javascript:void(0)" class="item1 tsina"></a>
-                    <a href="javascript:void(0)" class="item4 qzone"></a>
-                </div>
-            </div>
-        </div>
+    <!-- 广告/海度统计相关-->
+    <script type="text/javascript">
+        _hiido_no = 0;
+        _hiido_wid = ["lbox"];
+    </script>
+    <script src="http://www.duowan.com/duowan.js" type="text/javascript"></script>
 
-        <div class="heropage-hero-tooltips--empty">
-            <i class="tooltips-arrow"></i>
-            <p>因长时间没有游戏，数据无法采集</p>
-        </div>
 
-        <div class="hide" id="achievementInTextPlain"></div>
-    </div>
+
+    <!-- 自定义统计 -->
+    <script src="/js/counter.js" type="text/javascript"></script>
+    <script src="/js/auto_incr.js" type="text/javascript"></script>
 
 
     <script>
@@ -1043,5 +291,5 @@
 
     </script>
 
-</body>
-</html>
+
+</div>

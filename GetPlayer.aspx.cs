@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,7 +16,7 @@ using System.Windows.Forms;
 
 public partial class GetPlayer : System.Web.UI.Page
 {
-    public IList<com_champ> _com_champ = new List<com_champ>(); //常用英雄 : name, count
+    //public IList<com_champ> _com_champ = new List<com_champ>(); //常用英雄 : name, count
     public IList<player_profile> _player_profile = new List<player_profile>(); //Player Profile : player_id, server, fighting
     public IList<normal_statistics> _normal_statistics = new List<normal_statistics>(); //normal statistics
     public IList<rank_statistics> _rank_statistics = new List<rank_statistics>(); //rank statistics
@@ -159,29 +160,29 @@ public partial class GetPlayer : System.Web.UI.Page
         });
         
         //常用英雄 : name, count
-        IEnumerable<HtmlNode> com_heroNodes = htmlDocument.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
-            && x.Attributes["class"].Value.Split().Contains("com-hero"));
-        foreach (HtmlNode child in com_heroNodes)
-        {
-            if (child.NodeType != HtmlNodeType.Text)
-            {
-                HtmlNodeCollection nodes = child.SelectNodes("//li");
-                foreach (HtmlNode node in nodes)
-                {
-                    string _count = Regex.Match(Regex.Match(node.InnerHtml, @"\d次").Value, @"\d").Value;
-                    if (node.Attributes.Contains("champion-name-ch"))
-                    {
-                        _com_champ.Add(new com_champ
-                        {
-                            champion_name_ch = node.Attributes["champion-name-ch"].Value,
-                            champion_name = node.Attributes["champion-name"].Value,
-                            icon = Regex.Match(node.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value,
-                            count = _count
-                        });
-                    }
-                }
-            }
-        }
+        //IEnumerable<HtmlNode> com_heroNodes = htmlDocument.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
+        //    && x.Attributes["class"].Value.Split().Contains("com-hero"));
+        //foreach (HtmlNode child in com_heroNodes)
+        //{
+        //    if (child.NodeType != HtmlNodeType.Text)
+        //    {
+        //        HtmlNodeCollection nodes = child.SelectNodes("//li");
+        //        foreach (HtmlNode node in nodes)
+        //        {
+        //            string _count = Regex.Match(Regex.Match(node.InnerHtml, @"\d次").Value, @"\d").Value;
+        //            if (node.Attributes.Contains("champion-name-ch"))
+        //            {
+        //                _com_champ.Add(new com_champ
+        //                {
+        //                    champion_name_ch = node.Attributes["champion-name-ch"].Value,
+        //                    champion_name = node.Attributes["champion-name"].Value,
+        //                    icon = Regex.Match(node.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value,
+        //                    count = _count
+        //                });
+        //            }
+        //        }
+        //    }
+        //}
 
         //get normal statistics
         IEnumerable<HtmlNode> tableNodes = htmlDocument.DocumentNode.Descendants().Where(x => x.Name == "table");
@@ -236,9 +237,18 @@ public partial class GetPlayer : System.Web.UI.Page
             }
         }
 
+        //new comChamp
+        string comHeroUrl = "http://lolbox.duowan.com/new/api/index.php?_do=personal/championslist&serverName=" + server + "&playerName=" + playerId;
+        string json = "";
+        using (WebClient wc = new WebClient())
+        {
+            json = wc.DownloadString(comHeroUrl);
+        }
+        played_champs playedChamps = JsonConvert.DeserializeObject<played_champs>(json);
+        Label1.Text = playedChamps.championName;
 
+        //get match list
         string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
-
         for (int i = 1; i <= 8; i++)
         {
             var getMatchHistoryWeb = new HtmlWeb();
@@ -278,8 +288,8 @@ public partial class GetPlayer : System.Web.UI.Page
         }
         gvPlayerProfile.DataSource = _player_profile;
         gvPlayerProfile.DataBind();
-        gvComChamp.DataSource = _com_champ;
-        gvComChamp.DataBind();
+        //gvComChamp.DataSource = _com_champ;
+        //gvComChamp.DataBind();
         gvNormalStat.DataSource = _normal_statistics;
         gvNormalStat.DataBind();
         gvRankStat.DataSource = _rank_statistics;
@@ -333,12 +343,42 @@ public partial class GetPlayer : System.Web.UI.Page
         public string matches_lost { get; set; }
         public string update_datetime { get; set; }
     }
-    public class com_champ
+    //public class com_champ
+    //{
+    //    public string champion_name_ch { get; set; }
+    //    public string champion_name { get; set; }
+    //    public string icon { get; set; }
+    //    public string count { get; set; }
+    //}
+    public class played_champs
     {
-        public string champion_name_ch { get; set; }
-        public string champion_name { get; set; }
-        public string icon { get; set; }
-        public string count { get; set; }
+        public string championName { get; set; }
+        public string championNameCN { get; set; }
+        public string winRate { get; set; }
+        public string matchStat { get; set; }
+        public List<KDA> averageKDA { get; set; }
+        public string averageKDARating { get; set; }
+        public List<averageDamage> averageDamage { get; set; }
+        public List<averageEarn> averageEarn { get; set; }
+        public string averageMinionsKilled { get; set; }
+        public string totalMVP { get; set; }
+        public string totalHope { get; set; }
+    }
+    public class KDA
+    {
+        public string kill { get; set; }
+        public string died { get; set; }
+        public string assist { get; set; }
+    }
+    public class averageDamage
+    {
+        public string damage { get; set; }
+        public string minute { get; set; }
+    }
+    public class averageEarn
+    {
+        public string gold { get; set; }
+        public string minute { get; set; }
     }
     public class match_list
     {

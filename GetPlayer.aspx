@@ -67,6 +67,8 @@
                 <asp:BoundField DataField="first_win" HeaderText="首胜" />
             </Columns>
         </asp:GridView>
+        <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-bordered" AutoGenerateColumns="true">
+        </asp:GridView>
         <asp:GridView ID="gvComChamp" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="常用英雄">
             <Columns>
                 <asp:TemplateField HeaderText="头像">

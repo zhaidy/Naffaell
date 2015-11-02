@@ -244,8 +244,9 @@ public partial class GetPlayer : System.Web.UI.Page
         {
             json = wc.DownloadString(comHeroUrl);
         }
-        played_champs playedChamps = JsonConvert.DeserializeObject<played_champs>(json);
-        Label1.Text = playedChamps.championName;
+        //played_champs playedChamps = JsonConvert.DeserializeObject<played_champs>(json);
+        played_champs playedChamps = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<played_champs>(json);
+        Label1.Text = playedChamps.championNameCN;
 
         //get match list
         string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
@@ -288,6 +289,8 @@ public partial class GetPlayer : System.Web.UI.Page
         }
         gvPlayerProfile.DataSource = _player_profile;
         gvPlayerProfile.DataBind();
+        //gvPlayedChamp.DataSource = playedChamps;
+        //gvPlayedChamp.DataBind();
         //gvComChamp.DataSource = _com_champ;
         //gvComChamp.DataBind();
         gvNormalStat.DataSource = _normal_statistics;

@@ -260,8 +260,9 @@ public partial class GetPlayer : System.Web.UI.Page
                         string icon = Regex.Match(championSpan.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
                         string champion_name_ch = championSpan.SelectSingleNode("img").Attributes["title"].Value;
                         string status = li.SelectSingleNode("p").SelectSingleNode("em").InnerText;
-                        string mode = li.SelectSingleNode("//span[@class='game']").InnerText;
-                        string date = Regex.Replace(li.SelectSingleNode("//p[@class='info']").LastChild.InnerText, @"\s", "").Replace("&nbsp;", "");
+                        HtmlNode modeNode = li.SelectSingleNode("p[@class='info']").SelectSingleNode("span[@class='game']");
+                        string mode = modeNode.InnerText;
+                        string date = Regex.Replace(li.SelectSingleNode("p[@class='info']").LastChild.InnerText, @"\s", "").Replace("&nbsp;", "");
                         _match_list.Add(new match_list
                         {
                             id = id,

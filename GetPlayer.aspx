@@ -109,6 +109,11 @@
                 <asp:BoundField DataField="status" HeaderText="胜/负" />
                 <asp:BoundField DataField="mode" HeaderText="模式" />
                 <asp:BoundField DataField="date" HeaderText="日期" />
+                <%--<asp:TemplateField>
+                    <ItemTemplate>
+                        <asp:GridView ID="gvDetail" runat="server"></asp:GridView>
+                    </ItemTemplate>
+                </asp:TemplateField>--%>
             </Columns>
         </asp:GridView>
     </div>

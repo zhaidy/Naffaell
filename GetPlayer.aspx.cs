@@ -22,6 +22,8 @@ public partial class GetPlayer : System.Web.UI.Page
     public IList<match_list> _match_list = new List<match_list>(); //match_list
     string _playerId = "";
     string _server = "";
+    string server = "";
+    string playerId = "";
     string tier = "";
     string rank = "";
     string points = "";
@@ -33,8 +35,8 @@ public partial class GetPlayer : System.Web.UI.Page
     {
         _playerId = txtPlayerId.Text;
         _server = dpServer.SelectedValue;
-        string server = System.Web.HttpUtility.UrlEncode(dpServer.SelectedValue, System.Text.Encoding.UTF8);
-        string playerId = System.Web.HttpUtility.UrlEncode(txtPlayerId.Text, System.Text.Encoding.UTF8);
+        server = System.Web.HttpUtility.UrlEncode(dpServer.SelectedValue, System.Text.Encoding.UTF8);
+        playerId = System.Web.HttpUtility.UrlEncode(txtPlayerId.Text, System.Text.Encoding.UTF8);
 
         sendRequest(server, playerId);
         parseHtml(server, playerId);
@@ -105,7 +107,6 @@ public partial class GetPlayer : System.Web.UI.Page
     private void parseHtml(string server, string playerId)
     {
         string url = "http://lolbox.duowan.com/playerDetail.php?serverName=" + server + "&playerName=" + playerId;
-        string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
         string fighting = "";
         string level = "";
         string playerIcon = "";
@@ -236,40 +237,44 @@ public partial class GetPlayer : System.Web.UI.Page
         }
 
 
-        var getMatchHistoryWeb = new HtmlWeb();
-        var doc = getMatchHistoryWeb.Load(matchListUrl);
+        string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
 
-        HtmlNode matchHistorybodyNode = doc.DocumentNode.SelectSingleNode("//body");
-
-        //match_list
-        IEnumerable<HtmlNode> historyNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
-            && x.Attributes["class"].Value.Split().Contains("l-box"));
-        foreach (HtmlNode child in historyNodes)
+        for (int i = 1; i <= 8; i++)
         {
-            foreach (HtmlNode ul in child.SelectNodes("ul"))
+            var getMatchHistoryWeb = new HtmlWeb();
+            var doc = getMatchHistoryWeb.Load(matchListUrl + "&page=" + i.ToString());
+
+            HtmlNode matchHistorybodyNode = doc.DocumentNode.SelectSingleNode("//body");
+
+            //match_list
+            IEnumerable<HtmlNode> historyNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
+                && x.Attributes["class"].Value.Split().Contains("l-box"));
+            foreach (HtmlNode child in historyNodes)
             {
-                foreach (HtmlNode li in ul.SelectNodes("li"))
+                foreach (HtmlNode ul in child.SelectNodes("ul"))
                 {
-                    string id = li.Attributes["id"].Value.Substring(3);
-                    HtmlNode championSpan = li.SelectSingleNode("span[@class='avatar']");
-                    string icon = Regex.Match(championSpan.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
-                    string champion_name_ch = championSpan.SelectSingleNode("img").Attributes["title"].Value;
-                    string status = li.SelectSingleNode("p").SelectSingleNode("em").InnerText;
-                    string mode = li.SelectSingleNode("//span[@class='game']").InnerText;
-                    string date = Regex.Replace(li.SelectSingleNode("//p[@class='info']").LastChild.InnerText, @"\s", "").Replace("&nbsp;", "");
-                    _match_list.Add(new match_list
+                    foreach (HtmlNode li in ul.SelectNodes("li"))
                     {
-                        id = id,
-                        icon = icon,
-                        champion_name_ch = champion_name_ch,
-                        status = status,
-                        mode = mode,
-                        date = date
-                    });
+                        string id = li.Attributes["id"].Value.Substring(3);
+                        HtmlNode championSpan = li.SelectSingleNode("span[@class='avatar']");
+                        string icon = Regex.Match(championSpan.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                        string champion_name_ch = championSpan.SelectSingleNode("img").Attributes["title"].Value;
+                        string status = li.SelectSingleNode("p").SelectSingleNode("em").InnerText;
+                        string mode = li.SelectSingleNode("//span[@class='game']").InnerText;
+                        string date = Regex.Replace(li.SelectSingleNode("//p[@class='info']").LastChild.InnerText, @"\s", "").Replace("&nbsp;", "");
+                        _match_list.Add(new match_list
+                        {
+                            id = id,
+                            icon = icon,
+                            champion_name_ch = champion_name_ch,
+                            status = status,
+                            mode = mode,
+                            date = date
+                        });
+                    }
                 }
             }
         }
-
         gvPlayerProfile.DataSource = _player_profile;
         gvPlayerProfile.DataBind();
         gvComChamp.DataSource = _com_champ;
@@ -280,6 +285,23 @@ public partial class GetPlayer : System.Web.UI.Page
         gvRankStat.DataBind();
         gvMatchList.DataSource = _match_list;
         gvMatchList.DataBind();
+    }
+    protected void gvMatchList_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            string id = gvMatchList.DataKeys[e.Row.RowIndex].Value.ToString();
+            GridView gvDetail = e.Row.FindControl("gvDetail") as GridView;
+
+            //15549326330
+            string matchListDetailUrl = "http://lolbox.duowan.com/matchList/ajaxMatchDetail2.php?matchId=" + id + "&serverName=" + server + "&playerName=" + playerId;
+            var getMatchHistoryDetailWeb = new HtmlWeb();
+            var MatchDetaildoc = getMatchHistoryDetailWeb.Load(matchListDetailUrl);
+            HtmlNodeCollection matchHistoryDetailbodyNode = MatchDetaildoc.DocumentNode.SelectNodes("//a[text()='" + _playerId + "']");
+
+            //gvDetail.DataSource =
+            //gvDetail.DataBind();
+        }
     }
     public class player_profile
     {

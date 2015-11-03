@@ -455,8 +455,8 @@ public partial class GetPlayer : System.Web.UI.Page
                             honour += em.Attributes["title"].Value;
                         }
                     }
-                    HtmlNode playerNode = teamNameDivNode.SelectSingleNode("a");
-                    player = playerNode.InnerText;
+                    HtmlNode playerNode = teamNameDivNode.SelectSingleNode("span[@class='avatar']").SelectSingleNode("img");
+                    player = playerNode.Attributes["data-playername"].Value;
                     HtmlNode goldNode = row.SelectSingleNode("td[@class='col2']");
                     gold = goldNode.InnerText;
                     HtmlNode KDANode = row.SelectSingleNode("td[@class='col3']");

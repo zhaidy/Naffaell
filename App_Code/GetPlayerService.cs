@@ -13,15 +13,7 @@ using System.Web.Services;
 [WebServiceBinding(ConformsTo = WsiProfiles.BasicProfile1_1)]
 // To allow this Web Service to be called from script, using ASP.NET AJAX, uncomment the following line. 
 // [System.Web.Script.Services.ScriptService]
-public class GetPlayer : System.Web.Services.WebService {
-
-    public GetPlayer () {
-
-        //Uncomment the following line if using designed components 
-        //InitializeComponent(); s
-        
-    }
-
+public class GetPlayerService : System.Web.Services.WebService {
 
     [WebMethod]
     public string HelloWorld() {

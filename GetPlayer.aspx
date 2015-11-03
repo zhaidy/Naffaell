@@ -67,7 +67,23 @@
                 <asp:BoundField DataField="first_win" HeaderText="首胜" />
             </Columns>
         </asp:GridView>
-        <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-bordered" AutoGenerateColumns="true">
+        <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="英雄记录">
+            <Columns>
+                 <asp:TemplateField HeaderText="头像">
+                    <ItemTemplate>
+                        <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
+                    </ItemTemplate>
+                </asp:TemplateField>
+                <asp:BoundField DataField="championNameCN" HeaderText="英雄" />
+                <asp:BoundField DataField="matchStat" HeaderText="场次" />
+                <asp:BoundField DataField="winRate" HeaderText="胜率" />
+                <asp:BoundField DataField="averageKDARating" HeaderText="场均战损" />
+                <asp:BoundField DataField="averageKDA" HeaderText="场均杀死助" />
+                <asp:BoundField DataField="averageDamage" HeaderText="场均分钟输出" />
+                <asp:BoundField DataField="averageEarn" HeaderText="场均分钟经济" />
+                <asp:BoundField DataField="averageMinionsKilled" HeaderText="场均十分钟补兵" />
+                <asp:BoundField DataField="totalMVP" HeaderText="MVP次数" />
+            </Columns>
         </asp:GridView>
         <asp:GridView ID="gvComChamp" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="常用英雄">
             <Columns>

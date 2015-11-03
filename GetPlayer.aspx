@@ -1,6 +1,16 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/MasterPage.master" AutoEventWireup="true" CodeFile="GetPlayer.aspx.cs" Inherits="GetPlayer" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
+    <style type="text/css">
+    </style>
+    <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        function showDetails() {
+            jQuery.noConflict();
+            $('#myModal').modal('show');
+        }
+    </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
     <div class="page-header">
@@ -51,89 +61,205 @@
             </div>
         </div>
     </div>
-    <div class="container">
-        <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
-        <asp:GridView ID="gvPlayerProfile" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false">
-            <Columns>
-                <asp:TemplateField HeaderText="头像">
-                    <ItemTemplate>
-                        <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <asp:BoundField DataField="player_id" HeaderText="游戏 ID" />
-                <asp:BoundField DataField="server" HeaderText="大区" />
-                <asp:BoundField DataField="level" HeaderText="等级" />
-                <asp:BoundField DataField="fighting" HeaderText="战斗力" />
-                <asp:BoundField DataField="first_win" HeaderText="首胜" />
-            </Columns>
-        </asp:GridView>
-        <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="英雄记录">
-            <Columns>
-                 <asp:TemplateField HeaderText="头像">
-                    <ItemTemplate>
-                        <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <asp:BoundField DataField="championNameCN" HeaderText="英雄" />
-                <asp:BoundField DataField="matchStat" HeaderText="场次" />
-                <asp:BoundField DataField="winRate" HeaderText="胜率" />
-                <asp:BoundField DataField="averageKDARating" HeaderText="场均战损" />
-                <asp:BoundField DataField="averageKDA" HeaderText="场均杀死助" />
-                <asp:BoundField DataField="averageDamage" HeaderText="场均分钟输出" />
-                <asp:BoundField DataField="averageEarn" HeaderText="场均分钟经济" />
-                <asp:BoundField DataField="averageMinionsKilled" HeaderText="场均十分钟补兵" />
-                <asp:BoundField DataField="totalMVP" HeaderText="MVP次数" />
-            </Columns>
-        </asp:GridView>
-        <asp:GridView ID="gvComChamp" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="常用英雄">
-            <Columns>
-                <asp:TemplateField HeaderText="头像">
-                    <ItemTemplate>
-                        <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <asp:BoundField DataField="champion_name_ch" HeaderText="英雄" />
-                <asp:BoundField DataField="count" HeaderText="次数" />
-            </Columns>
-        </asp:GridView>
-        <asp:GridView ID="gvNormalStat" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="匹配">
-            <Columns>
-                <asp:BoundField DataField="type" HeaderText="模式" />
-                <asp:BoundField DataField="total_matches" HeaderText="场次" />
-                <asp:BoundField DataField="win_rate" HeaderText="胜率" />
-                <asp:BoundField DataField="matches_winned" HeaderText="胜场" />
-                <asp:BoundField DataField="matches_lost" HeaderText="负场" />
-            </Columns>
-        </asp:GridView>
-        <asp:GridView ID="gvRankStat" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="排位">
-            <Columns>
-                <asp:BoundField DataField="type" HeaderText="模式" />
-                <asp:BoundField DataField="rank" HeaderText="段位/级别" />
-                <asp:BoundField DataField="point" HeaderText="胜点" />
-                <asp:BoundField DataField="total_matches" HeaderText="场次" />
-                <asp:BoundField DataField="win_rate" HeaderText="胜率" />
-                <asp:BoundField DataField="matches_winned" HeaderText="胜场" />
-                <asp:BoundField DataField="matches_lost" HeaderText="负场" />
-            </Columns>
-        </asp:GridView>
-        <asp:GridView ID="gvMatchList" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" DataKeyNames="id" Caption="最近比赛">
-            <Columns>
-                <asp:TemplateField HeaderText="头像">
-                    <ItemTemplate>
-                        <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
-                    </ItemTemplate>
-                </asp:TemplateField>
-                <asp:BoundField DataField="champion_name_ch" HeaderText="英雄" />
-                <asp:BoundField DataField="status" HeaderText="胜/负" />
-                <asp:BoundField DataField="mode" HeaderText="模式" />
-                <asp:BoundField DataField="date" HeaderText="日期" />
-                <%--<asp:TemplateField>
+    <asp:UpdatePanel ID="upMain" runat="server">
+        <ContentTemplate>
+            <div class="container">
+                <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
+                <asp:GridView ID="gvPlayerProfile" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false">
+                    <Columns>
+                        <asp:TemplateField HeaderText="头像">
+                            <ItemTemplate>
+                                <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="player_id" HeaderText="游戏 ID" />
+                        <asp:BoundField DataField="server" HeaderText="大区" />
+                        <asp:BoundField DataField="level" HeaderText="等级" />
+                        <asp:BoundField DataField="fighting" HeaderText="战斗力" />
+                        <asp:BoundField DataField="first_win" HeaderText="首胜" />
+                    </Columns>
+                </asp:GridView>
+                <asp:GridView ID="gvNormalStat" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="匹配">
+                    <Columns>
+                        <asp:BoundField DataField="type" HeaderText="模式" />
+                        <asp:BoundField DataField="total_matches" HeaderText="场次" />
+                        <asp:BoundField DataField="win_rate" HeaderText="胜率" />
+                        <asp:BoundField DataField="matches_winned" HeaderText="胜场" />
+                        <asp:BoundField DataField="matches_lost" HeaderText="负场" />
+                    </Columns>
+                </asp:GridView>
+                <asp:GridView ID="gvRankStat" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="排位">
+                    <Columns>
+                        <asp:BoundField DataField="type" HeaderText="模式" />
+                        <asp:BoundField DataField="rank" HeaderText="段位/级别" />
+                        <asp:BoundField DataField="point" HeaderText="胜点" />
+                        <asp:BoundField DataField="total_matches" HeaderText="场次" />
+                        <asp:BoundField DataField="win_rate" HeaderText="胜率" />
+                        <asp:BoundField DataField="matches_winned" HeaderText="胜场" />
+                        <asp:BoundField DataField="matches_lost" HeaderText="负场" />
+                    </Columns>
+                </asp:GridView>
+                <asp:GridView ID="gvComChamp" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="常用英雄">
+                    <Columns>
+                        <asp:TemplateField HeaderText="头像">
+                            <ItemTemplate>
+                                <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="champion_name_ch" HeaderText="英雄" />
+                        <asp:BoundField DataField="count" HeaderText="次数" />
+                    </Columns>
+                </asp:GridView>
+                <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" Caption="英雄记录">
+                    <Columns>
+                        <asp:TemplateField HeaderText="头像">
+                            <ItemTemplate>
+                                <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="championNameCN" HeaderText="英雄" />
+                        <asp:BoundField DataField="matchStat" HeaderText="场次" />
+                        <asp:BoundField DataField="winRate" HeaderText="胜率" />
+                        <asp:BoundField DataField="averageKDARating" HeaderText="场均战损" />
+                        <asp:BoundField DataField="averageKDA" HeaderText="场均杀死助" />
+                        <asp:BoundField DataField="averageDamage" HeaderText="场均分钟输出" />
+                        <asp:BoundField DataField="averageEarn" HeaderText="场均分钟经济" />
+                        <asp:BoundField DataField="averageMinionsKilled" HeaderText="场均十分钟补兵" />
+                        <asp:BoundField DataField="totalMVP" HeaderText="MVP次数" />
+                    </Columns>
+                </asp:GridView>
+                <asp:GridView ID="gvMatchList" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false" DataKeyNames="id" Caption="最近比赛">
+                    <Columns>
+                        <asp:TemplateField HeaderText="头像">
+                            <ItemTemplate>
+                                <asp:Image ID="imgIcon" runat="server" ImageUrl='<%# Bind("icon") %>' />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="champion_name_ch" HeaderText="英雄" />
+                        <asp:BoundField DataField="status" HeaderText="胜/负" />
+                        <asp:BoundField DataField="mode" HeaderText="模式" />
+                        <asp:BoundField DataField="date" HeaderText="日期" />
+                        <asp:TemplateField>
+                            <ItemTemplate>
+                                <asp:Button ID="btnMatchDetail" runat="server" Text="详细" OnClick="btnMatchDetail_Click" CssClass="btn btn-info" />
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <%--<asp:TemplateField>
                     <ItemTemplate>
                         <asp:GridView ID="gvDetail" runat="server"></asp:GridView>
                     </ItemTemplate>
                 </asp:TemplateField>--%>
-            </Columns>
-        </asp:GridView>
-    </div>
+                    </Columns>
+                </asp:GridView>
+            </div>
+        </ContentTemplate>
+    </asp:UpdatePanel>
+    <asp:UpdatePanel ID="upDetails" runat="server">
+        <ContentTemplate>
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button>
+                            <asp:Label ID="Label2" Text="" runat="server" class="h4 modal-title"></asp:Label>
+                        </div>
+                        <div class="modal-body">
+                            <asp:GridView ID="gvMatchHeader" runat="server" CssClass="table table-bordered" AutoGenerateColumns="false">
+                                <Columns>
+                                    <asp:BoundField DataField="mode" HeaderText="类型" />
+                                    <asp:BoundField DataField="duration" HeaderText="时长" />
+                                    <asp:BoundField DataField="endTime" HeaderText="结束" />
+                                    <asp:BoundField DataField="kills" HeaderText="人头" />
+                                    <asp:BoundField DataField="gold" HeaderText="金钱" />
+                                </Columns>
+                            </asp:GridView>
+                            <asp:GridView ID="gvMatchDetailsA" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Font-Size="8pt">
+                                <Columns>
+                                    <asp:BoundField DataField="playerId" HeaderText="游戏ID" />
+                                    <asp:TemplateField HeaderText="英雄">
+                                        <ItemTemplate>
+                                            <asp:Image ID="imgChampIcon" runat="server" ImageUrl='<%# Bind("champIcon") %>' />
+                                            <asp:Label ID="lblChampName" runat="server" Text='<%# Bind("champion_name_ch") %>'></asp:Label>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="召唤师技能">
+                                        <ItemTemplate>
+                                            <asp:Image ID="spell1Icon" runat="server" ImageUrl='<%# Bind("firstSpellIcon") %>' />
+                                            <asp:Image ID="spell2Icon" runat="server" ImageUrl='<%# Bind("secondSpellIcon") %>' />
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:BoundField DataField="honour" HeaderText="荣誉" />
+                                    <asp:BoundField DataField="gold" HeaderText="金钱" />
+                                    <asp:BoundField DataField="KDA" HeaderText="KDA" />
+                                    <asp:BoundField DataField="itemName" HeaderText="出装" />
+                                    <asp:BoundField DataField="warScore" HeaderText="战局评分" />
+                                    <asp:BoundField DataField="lastHits" HeaderText="补兵" />
+                                    <asp:BoundField DataField="creeps" HeaderText="野怪" />
+                                    <asp:BoundField DataField="towersDestroyed" HeaderText="推塔" />
+                                    <asp:BoundField DataField="barracksDestroyed" HeaderText="兵营" />
+                                    <asp:BoundField DataField="wards" HeaderText="放眼数" />
+                                    <asp:BoundField DataField="dewards" HeaderText="排眼数" />
+                                    <asp:BoundField DataField="maxContKills" HeaderText="最大连杀" />
+                                    <asp:BoundField DataField="maxMultiKills" HeaderText="最大多杀" />
+                                    <asp:BoundField DataField="maxCrit" HeaderText="最大暴击" />
+                                    <asp:BoundField DataField="totalHeal" HeaderText="总治疗" />
+                                    <asp:BoundField DataField="totalDmg" HeaderText="输出伤害" />
+                                    <asp:BoundField DataField="totalTank" HeaderText="承受敌害" />
+                                    <asp:BoundField DataField="totalHeroDmg" HeaderText="给对方英雄造成总伤害" />
+                                    <asp:BoundField DataField="totalHeroPhyDmg" HeaderText="给对方英雄的物理伤害" />
+                                    <asp:BoundField DataField="totalHeroMagicDmg" HeaderText="给对方英雄的魔法伤害" />
+                                    <asp:BoundField DataField="totalHeroTrueDmg" HeaderText="给对方英雄的真实伤害" />
+                                </Columns>
+                            </asp:GridView>
+                            <asp:GridView ID="gvMatchDetailsB" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Font-Size="8pt">
+                                <Columns>
+                                    <asp:BoundField DataField="playerId" HeaderText="游戏ID" />
+                                    <asp:TemplateField HeaderText="英雄">
+                                        <ItemTemplate>
+                                            <asp:Image ID="imgChampIcon" runat="server" ImageUrl='<%# Bind("champIcon") %>' />
+                                            <asp:Label ID="lblChampName" runat="server" Text='<%# Bind("champion_name_ch") %>'></asp:Label>
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:TemplateField HeaderText="召唤师技能">
+                                        <ItemTemplate>
+                                            <asp:Image ID="spell1Icon" runat="server" ImageUrl='<%# Bind("firstSpellIcon") %>' />
+                                            <asp:Image ID="spell2Icon" runat="server" ImageUrl='<%# Bind("secondSpellIcon") %>' />
+                                        </ItemTemplate>
+                                    </asp:TemplateField>
+                                    <asp:BoundField DataField="honour" HeaderText="荣誉" />
+                                    <asp:BoundField DataField="gold" HeaderText="金钱" />
+                                    <asp:BoundField DataField="KDA" HeaderText="KDA" />
+                                    <asp:BoundField DataField="itemName" HeaderText="出装" />
+                                    <asp:BoundField DataField="warScore" HeaderText="战局评分" />
+                                    <asp:BoundField DataField="lastHits" HeaderText="补兵" />
+                                    <asp:BoundField DataField="creeps" HeaderText="野怪" />
+                                    <asp:BoundField DataField="towersDestroyed" HeaderText="推塔" />
+                                    <asp:BoundField DataField="barracksDestroyed" HeaderText="兵营" />
+                                    <asp:BoundField DataField="wards" HeaderText="放眼数" />
+                                    <asp:BoundField DataField="dewards" HeaderText="排眼数" />
+                                    <asp:BoundField DataField="maxContKills" HeaderText="最大连杀" />
+                                    <asp:BoundField DataField="maxMultiKills" HeaderText="最大多杀" />
+                                    <asp:BoundField DataField="maxCrit" HeaderText="最大暴击" />
+                                    <asp:BoundField DataField="totalHeal" HeaderText="总治疗" />
+                                    <asp:BoundField DataField="totalDmg" HeaderText="输出伤害" />
+                                    <asp:BoundField DataField="totalTank" HeaderText="承受敌害" />
+                                    <asp:BoundField DataField="totalHeroDmg" HeaderText="给对方英雄造成总伤害" />
+                                    <asp:BoundField DataField="totalHeroPhyDmg" HeaderText="给对方英雄的物理伤害" />
+                                    <asp:BoundField DataField="totalHeroMagicDmg" HeaderText="给对方英雄的魔法伤害" />
+                                    <asp:BoundField DataField="totalHeroTrueDmg" HeaderText="给对方英雄的真实伤害" />
+                                </Columns>
+                            </asp:GridView>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-danger" data-dismiss="modal">
+                                Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </ContentTemplate>
+    </asp:UpdatePanel>
 </asp:Content>
 

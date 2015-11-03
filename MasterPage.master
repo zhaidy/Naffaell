@@ -17,13 +17,14 @@
         body {
             padding-top: 50px;
             margin-bottom: 60px;
+            font-size: small;
         }
     </style>
 </head>
 <body>
     <form id="form1" runat="server">
         <asp:ScriptManager ID="ScriptManager1" runat="server" EnablePageMethods="true"></asp:ScriptManager>
-        <div id="nav" runat="server" class="navbar navbar-default navbar-fixed-top">
+        <div id="nav" runat="server" class="navbar navbar-inverse navbar-fixed-top">
             <div class="container-fluid">
                 <div class="navbar-header">
                     <asp:HyperLink ID="hlHeader" runat="server" Text="Naffaell" CssClass="navbar-brand" NavigateUrl="~/GetPlayer.aspx"></asp:HyperLink>

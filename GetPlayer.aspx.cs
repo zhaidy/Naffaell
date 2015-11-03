@@ -520,55 +520,55 @@ public partial class GetPlayer : System.Web.UI.Page
                     {
                         if (cell.Count >= 2 && cell[0].InnerText == "战局评分:")
                         {
-                            warScore = cell[1].InnerText;
+                            warScore = cell[1].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[0].InnerText == "补兵:")
                         {
-                            lastHits = cell[1].InnerText;
+                            lastHits = cell[1].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[2].InnerText == "野怪:")
                         {
-                            creeps = cell[3].InnerText;
+                            creeps = cell[3].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[0].InnerText == "推塔:")
                         {
-                            towersDestroyed = cell[1].InnerText;
+                            towersDestroyed = cell[1].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[2].InnerText == "兵营:")
                         {
-                            barracksDestroyed = cell[3].InnerText;
+                            barracksDestroyed = cell[3].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[0].InnerText == "放眼数:")
                         {
-                            wards = cell[1].InnerText;
+                            wards = cell[1].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[2].InnerText == "排眼数:")
                         {
-                            dewards = cell[3].InnerText;
+                            dewards = cell[3].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[0].InnerText == "最大连杀:")
                         {
-                            maxContKills = cell[1].InnerText;
+                            maxContKills = cell[1].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[2].InnerText == "最大多杀:")
                         {
-                            maxMultiKills = cell[3].InnerText;
+                            maxMultiKills = cell[3].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[0].InnerText == "最大暴击:")
                         {
-                            maxCrit = cell[1].InnerText;
+                            maxCrit = cell[1].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[2].InnerText == "总治疗:")
                         {
-                            totalHeal = cell[3].InnerText;
+                            totalHeal = cell[3].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[0].InnerText == "输出伤害:")
                         {
-                            totalDmg = cell[1].InnerText;
+                            totalDmg = cell[1].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                         if (cell.Count >= 4 && cell[2].InnerText == "承受敌害:")
                         {
-                            totalTank = cell[3].InnerText;
+                            totalTank = cell[3].InnerText.Replace(" ", "").Replace("\r\n", "");
                         }
                     }
                 }
@@ -578,19 +578,19 @@ public partial class GetPlayer : System.Web.UI.Page
             {
                 if (node.InnerHtml.Contains("给对方英雄造成总伤害:"))
                 {
-                    totalHeroDmg = node.InnerText.Replace("给对方英雄造成总伤害:", "");
+                    totalHeroDmg = node.InnerText.Replace("给对方英雄造成总伤害:", "").Replace(" ", "").Replace("\r\n", "");
                 }
                 if (node.InnerHtml.Contains("给对方英雄的物理伤害:"))
                 {
-                    totalHeroPhyDmg = node.InnerText.Replace("给对方英雄的物理伤害:", "");
+                    totalHeroPhyDmg = node.InnerText.Replace("给对方英雄的物理伤害:", "").Replace(" ", "").Replace("\r\n", "");
                 }
                 if (node.InnerHtml.Contains("给对方英雄的魔法伤害:"))
                 {
-                    totalHeroMagicDmg = node.InnerText.Replace("给对方英雄的魔法伤害:", "");
+                    totalHeroMagicDmg = node.InnerText.Replace("给对方英雄的魔法伤害:", "").Replace(" ", "").Replace("\r\n", "");
                 }
                 if (node.InnerHtml.Contains("给对方英雄的真实伤害:"))
                 {
-                    totalHeroTrueDmg = node.InnerText.Replace("给对方英雄的真实伤害:", "");
+                    totalHeroTrueDmg = node.InnerText.Replace("给对方英雄的真实伤害:", "").Replace(" ", "").Replace("\r\n", "");
                 }
             }
             string test = divTopLeft.SelectSingleNode("p[@class='tip-user-name']").InnerText.Replace(" ", "").Replace("\r\n", "");

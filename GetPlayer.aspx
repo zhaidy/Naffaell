@@ -2,6 +2,38 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="Server">
     <style type="text/css">
+        .tableA td {
+            padding: 10px 5px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+        }
+        .tableA th {
+            padding: 10px 5px;
+            text-align: center;
+            border-bottom: 1px solid #eee;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+        }
+        .tableB td {
+            padding: 10px 5px;
+            text-align: center;
+            border-bottom: transparent;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+        }
+        .tableB th {
+            padding: 10px 5px;
+            text-align: center;
+            border-bottom: transparent;
+            border-top: transparent;
+            border-left: transparent;
+            border-right: transparent;
+        }
     </style>
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="Scripts/bootstrap.min.js"></script>
@@ -10,6 +42,24 @@
             jQuery.noConflict();
             $('#myModal').modal('show');
         }
+        $(document).on('click', '[src*=plus]', function (e) {
+            $(this).closest("tr").after("<tr><td></td><td colspan = '999' style='text-align: center'>" + $(this).next().html() + "</td></tr>")
+            $(this).attr("src", "/Naffaell/Images/minus.png");
+        });
+        $(document).on('click', '[src*=minus]', function (e) {
+            $(this).attr("src", "/Naffaell/Images/plus.png");
+            $(this).closest("tr").next().remove();
+        });
+        //$(document).ready(function () {
+        //    $("[src*=plus]").on("click", function () {
+        //        $(this).closest("tr").after("<tr><td></td><td colspan = '999' style='text-align: center'>" + $(this).next().html() + "</td></tr>")
+        //        $(this).attr("src", "/Advace/Images/minus.png");
+        //    });
+        //    $("[src*=minus]").on("click", function () {
+        //        $(this).attr("src", "/Advace/Images/plus.png");
+        //        $(this).closest("tr").next().remove();
+        //    });
+        //});
     </script>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="Server">
@@ -67,7 +117,8 @@
         <asp:UpdatePanel ID="upMain" runat="server">
             <ContentTemplate>
                 <asp:Label ID="Label1" runat="server" Text=""></asp:Label>
-                <asp:GridView ID="gvPlayerProfile" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false">
+                <asp:GridView ID="gvPlayerProfile" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" 
+                    Style="border-right: transparent; border-left: transparent; border: transparent;">
                     <Columns>
                         <asp:TemplateField HeaderText="头像">
                             <ItemTemplate>
@@ -81,7 +132,8 @@
                         <asp:BoundField DataField="first_win" HeaderText="首胜" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="gvNormalStat" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Caption="匹配">
+                <asp:GridView ID="gvNormalStat" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="匹配"
+                    Style="border-right: transparent; border-left: transparent; border: transparent;">
                     <Columns>
                         <asp:BoundField DataField="type" HeaderText="模式" />
                         <asp:BoundField DataField="total_matches" HeaderText="场次" />
@@ -90,7 +142,8 @@
                         <asp:BoundField DataField="matches_lost" HeaderText="负场" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="gvRankStat" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Caption="排位">
+                <asp:GridView ID="gvRankStat" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="排位"
+                    Style="border-right: transparent; border-left: transparent; border: transparent;">
                     <Columns>
                         <asp:BoundField DataField="type" HeaderText="模式" />
                         <asp:BoundField DataField="rank" HeaderText="段位/级别" />
@@ -101,7 +154,8 @@
                         <asp:BoundField DataField="matches_lost" HeaderText="负场" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="gvComChamp" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Caption="常用英雄">
+                <asp:GridView ID="gvComChamp" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="常用英雄"
+                    Style="border-right: transparent; border-left: transparent; border: transparent;">
                     <Columns>
                         <asp:TemplateField HeaderText="头像">
                             <ItemTemplate>
@@ -112,7 +166,8 @@
                         <asp:BoundField DataField="count" HeaderText="次数" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Caption="英雄记录">
+                <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="英雄记录"
+                    Style="border-right: transparent; border-left: transparent; border: transparent;">
                     <Columns>
                         <asp:TemplateField HeaderText="头像">
                             <ItemTemplate>
@@ -130,7 +185,8 @@
                         <asp:BoundField DataField="totalMVP" HeaderText="MVP次数" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="gvMatchList" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" DataKeyNames="id" Caption="最近比赛">
+                <asp:GridView ID="gvMatchList" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" DataKeyNames="id" Caption="最近比赛"
+                    Style="border-right: transparent; border-left: transparent; border: transparent;">
                     <Columns>
                         <asp:TemplateField HeaderText="头像">
                             <ItemTemplate>
@@ -163,16 +219,327 @@
                             <asp:Label ID="Label2" Text="" runat="server" class="h4 modal-title"></asp:Label>
                         </div>
                         <div class="modal-body">
-                            <asp:GridView ID="gvMatchHeader" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false">
-                                <Columns>
-                                    <asp:BoundField DataField="mode" HeaderText="类型" />
-                                    <asp:BoundField DataField="duration" HeaderText="时长" />
-                                    <asp:BoundField DataField="endTime" HeaderText="结束" />
-                                    <asp:BoundField DataField="kills" HeaderText="人头" />
-                                    <asp:BoundField DataField="gold" HeaderText="金钱" />
-                                </Columns>
-                            </asp:GridView>
-                            <asp:GridView ID="gvMatchDetailsA" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Font-Size="8pt">
+                            <div class="container-fluid">
+                                <asp:GridView ID="gvMatchHeader" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false"
+                                    Style="border-right: transparent; border-left: transparent; border: transparent;">
+                                    <Columns>
+                                        <asp:BoundField DataField="mode" HeaderText="类型" />
+                                        <asp:BoundField DataField="duration" HeaderText="时长" />
+                                        <asp:BoundField DataField="endTime" HeaderText="结束" />
+                                        <asp:BoundField DataField="kills" HeaderText="人头" />
+                                        <asp:BoundField DataField="gold" HeaderText="金钱" />
+                                    </Columns>
+                                </asp:GridView>
+                            </div>
+                            <div class="container-fluid">
+                                <asp:GridView ID="gvMatchDetailsA" runat="server" CssClass="table table-hover table-condensed tableA" 
+                                    AutoGenerateColumns="false" DataKeyNames="matchId" OnRowDataBound="gvMatchDetailsA_RowDataBound" Caption="蓝色方"
+                                    Style="border-right: transparent; border-left: transparent; border: transparent;">
+                                    <Columns>
+                                        <asp:TemplateField>
+                                            <ItemTemplate>
+                                                <asp:Image ID="imgChampIcon" runat="server" ImageUrl='<%# Bind("champIcon") %>' ToolTip='<%# Bind("champion_name_ch") %>' />
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField>
+                                            <ItemTemplate>
+                                                <div class="container-fluid" style="text-align: left;">
+                                                    <div class="row">
+                                                        <asp:Label ID="lblPlayerId" runat="server" Text='<%# Bind("playerId") %>'></asp:Label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <asp:Image ID="spell1Icon" runat="server" ImageUrl='<%# Bind("firstSpellIcon") %>' />
+                                                        <asp:Image ID="spell2Icon" runat="server" ImageUrl='<%# Bind("secondSpellIcon") %>' />
+                                                    </div>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="KDA">
+                                            <ItemTemplate>
+                                                <asp:Label ID="lblKDA" runat="server" Text='<%# Bind("KDA") %>'></asp:Label>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="经济/补刀">
+                                            <ItemTemplate>
+                                                <div class="container-fluid">
+                                                    <div class="row">
+                                                        <asp:Label ID="lblGold" runat="server" Text='<%# Bind("gold") %>' ForeColor="#ff5400"></asp:Label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <asp:Label ID="lblLastHits" runat="server" Text='<%# Bind("lastHits") %>'></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="插眼/反眼">
+                                            <ItemTemplate>
+                                                <div class="container-fluid">
+                                                    <div class="row">
+                                                        <asp:Label ID="lblWards" runat="server" Text='<%# Bind("wards") %>' ForeColor="#ff5400"></asp:Label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <asp:Label ID="lblDewards" runat="server" Text='<%# Bind("dewards") %>'></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="出装">
+                                            <ItemTemplate>
+                                                <div>
+                                                    <asp:GridView ID="gvItemsA" runat="server" AutoGenerateColumns="false" ShowHeader="false" BorderWidth="0px">
+                                                        <Columns>
+                                                            <asp:TemplateField>
+                                                                <ItemTemplate>
+                                                                    <asp:Image ID="itemIcon1" runat="server" ImageUrl='<%# Bind("itemIcon1") %>' ToolTip='<%# Bind("itemDesc1") %>' />
+                                                                    <asp:Image ID="itemIcon2" runat="server" ImageUrl='<%# Bind("itemIcon2") %>' ToolTip='<%# Bind("itemDesc2") %>' />
+                                                                    <asp:Image ID="itemIcon3" runat="server" ImageUrl='<%# Bind("itemIcon3") %>' ToolTip='<%# Bind("itemDesc3") %>' />
+                                                                    <asp:Image ID="itemIcon4" runat="server" ImageUrl='<%# Bind("itemIcon4") %>' ToolTip='<%# Bind("itemDesc4") %>' />
+                                                                    <asp:Image ID="itemIcon5" runat="server" ImageUrl='<%# Bind("itemIcon5") %>' ToolTip='<%# Bind("itemDesc5") %>' />
+                                                                    <asp:Image ID="itemIcon6" runat="server" ImageUrl='<%# Bind("itemIcon6") %>' ToolTip='<%# Bind("itemDesc6") %>' />
+                                                                </ItemTemplate>
+                                                            </asp:TemplateField>
+                                                        </Columns>
+                                                    </asp:GridView>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField>
+                                            <ItemTemplate>
+                                                <asp:Image ID="img" runat="server" Style="cursor: pointer" src="/Advace/Images/plus.png" />
+                                                <asp:Panel ID="pnlDetails" runat="server" Style="display: none">
+                                                    <table class="table table-condensed tableB" style="font-size: 12px; border-right: transparent; border-left: transparent; border: transparent;">
+                                                        <tr>
+                                                            <td style="color: #D8A68B;">战局评分:</td>
+                                                            <td colspan="3" style="color: #ff9900;">
+                                                                <asp:Label ID="lblWarScore" runat="server" Text='<%# Bind("warScore") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="color: black;">推塔:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTowersDestroyed" runat="server" Text='<%# Bind("towersDestroyed") %>'></asp:Label>
+                                                            </td>
+                                                            <td>兵营:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblBarracksDestroyed" runat="server" Text='<%# Bind("barracksDestroyed") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>最大连杀:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblMaxContKills" runat="server" Text='<%# Bind("maxContKills") %>'></asp:Label>
+                                                            </td>
+                                                            <td>最大多杀:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblMaxMultiKills" runat="server" Text='<%# Bind("maxMultiKills") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>最大暴击:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblMaxCrit" runat="server" Text='<%# Bind("maxCrit") %>'></asp:Label>
+                                                            </td>
+                                                            <td>总治疗:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeal" runat="server" Text='<%# Bind("totalHeal") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>输出伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalDmg" runat="server" Text='<%# Bind("totalDmg") %>'></asp:Label>
+                                                            </td>
+                                                            <td>承受敌害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalTank" runat="server" Text='<%# Bind("totalTank") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄造成总伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroDmg" runat="server" Text='<%# Bind("totalHeroDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄的物理伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroPhyDmg" runat="server" Text='<%# Bind("totalHeroPhyDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄的魔法伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroMagicDmg" runat="server" Text='<%# Bind("totalHeroMagicDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄的真实伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroTrueDmg" runat="server" Text='<%# Bind("totalHeroTrueDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </asp:Panel>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                </asp:GridView>
+                            </div>
+                            <div class="container-fluid">
+                                <asp:GridView ID="gvMatchDetailsB" runat="server" CssClass="table table-hover table-condensed tableA" 
+                                    AutoGenerateColumns="false" DataKeyNames="matchId" OnRowDataBound="gvMatchDetailsB_RowDataBound" Caption="紫色方"
+                                    Style="border-right: transparent; border-left: transparent; border: transparent;">
+                                    <Columns>
+                                        <asp:TemplateField>
+                                            <ItemTemplate>
+                                                <asp:Image ID="imgChampIcon" runat="server" ImageUrl='<%# Bind("champIcon") %>' ToolTip='<%# Bind("champion_name_ch") %>' />
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField>
+                                            <ItemTemplate>
+                                                <div class="container-fluid" style="text-align: left;">
+                                                    <div class="row">
+                                                        <asp:Label ID="lblPlayerId" runat="server" Text='<%# Bind("playerId") %>'></asp:Label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <asp:Image ID="spell1Icon" runat="server" ImageUrl='<%# Bind("firstSpellIcon") %>' />
+                                                        <asp:Image ID="spell2Icon" runat="server" ImageUrl='<%# Bind("secondSpellIcon") %>' />
+                                                    </div>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="KDA">
+                                            <ItemTemplate>
+                                                <asp:Label ID="lblKDA" runat="server" Text='<%# Bind("KDA") %>'></asp:Label>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="经济/补刀">
+                                            <ItemTemplate>
+                                                <div class="container-fluid">
+                                                    <div class="row">
+                                                        <asp:Label ID="lblGold" runat="server" Text='<%# Bind("gold") %>' ForeColor="#ff5400"></asp:Label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <asp:Label ID="lblLastHits" runat="server" Text='<%# Bind("lastHits") %>'></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="插眼/反眼">
+                                            <ItemTemplate>
+                                                <div class="container-fluid">
+                                                    <div class="row">
+                                                        <asp:Label ID="lblWards" runat="server" Text='<%# Bind("wards") %>' ForeColor="#ff5400"></asp:Label>
+                                                    </div>
+                                                    <div class="row">
+                                                        <asp:Label ID="lblDewards" runat="server" Text='<%# Bind("dewards") %>'></asp:Label>
+                                                    </div>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField HeaderText="出装">
+                                            <ItemTemplate>
+                                                <div>
+                                                    <asp:GridView ID="gvItemsB" runat="server" AutoGenerateColumns="false" ShowHeader="false" BorderWidth="0px">
+                                                        <Columns>
+                                                            <asp:TemplateField>
+                                                                <ItemTemplate>
+                                                                    <asp:Image ID="itemIcon1" runat="server" ImageUrl='<%# Bind("itemIcon1") %>' ToolTip='<%# Bind("itemDesc1") %>' />
+                                                                    <asp:Image ID="itemIcon2" runat="server" ImageUrl='<%# Bind("itemIcon2") %>' ToolTip='<%# Bind("itemDesc2") %>' />
+                                                                    <asp:Image ID="itemIcon3" runat="server" ImageUrl='<%# Bind("itemIcon3") %>' ToolTip='<%# Bind("itemDesc3") %>' />
+                                                                    <asp:Image ID="itemIcon4" runat="server" ImageUrl='<%# Bind("itemIcon4") %>' ToolTip='<%# Bind("itemDesc4") %>' />
+                                                                    <asp:Image ID="itemIcon5" runat="server" ImageUrl='<%# Bind("itemIcon5") %>' ToolTip='<%# Bind("itemDesc5") %>' />
+                                                                    <asp:Image ID="itemIcon6" runat="server" ImageUrl='<%# Bind("itemIcon6") %>' ToolTip='<%# Bind("itemDesc6") %>' />
+                                                                </ItemTemplate>
+                                                            </asp:TemplateField>
+                                                        </Columns>
+                                                    </asp:GridView>
+                                                </div>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                        <asp:TemplateField>
+                                            <ItemTemplate>
+                                                <asp:Image ID="img" runat="server" Style="cursor: pointer" src="/Advace/Images/plus.png" />
+                                                <asp:Panel ID="pnlDetails" runat="server" Style="display: none">
+                                                    <table class="table table-condensed tableB" style="font-size: 12px; border-right: transparent; border-left: transparent; border: transparent;"">
+                                                        <tr>
+                                                            <td style="color: #D8A68B;">战局评分:</td>
+                                                            <td colspan="3" style="color: #ff9900;">
+                                                                <asp:Label ID="lblWarScore" runat="server" Text='<%# Bind("warScore") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="color: black;">推塔:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTowersDestroyed" runat="server" Text='<%# Bind("towersDestroyed") %>'></asp:Label>
+                                                            </td>
+                                                            <td>兵营:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblBarracksDestroyed" runat="server" Text='<%# Bind("barracksDestroyed") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>最大连杀:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblMaxContKills" runat="server" Text='<%# Bind("maxContKills") %>'></asp:Label>
+                                                            </td>
+                                                            <td>最大多杀:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblMaxMultiKills" runat="server" Text='<%# Bind("maxMultiKills") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>最大暴击:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblMaxCrit" runat="server" Text='<%# Bind("maxCrit") %>'></asp:Label>
+                                                            </td>
+                                                            <td>总治疗:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeal" runat="server" Text='<%# Bind("totalHeal") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td>输出伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalDmg" runat="server" Text='<%# Bind("totalDmg") %>'></asp:Label>
+                                                            </td>
+                                                            <td>承受敌害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalTank" runat="server" Text='<%# Bind("totalTank") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄造成总伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroDmg" runat="server" Text='<%# Bind("totalHeroDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄的物理伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroPhyDmg" runat="server" Text='<%# Bind("totalHeroPhyDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄的魔法伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroMagicDmg" runat="server" Text='<%# Bind("totalHeroMagicDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td colspan="3">给对方英雄的真实伤害:</td>
+                                                            <td>
+                                                                <asp:Label ID="lblTotalHeroTrueDmg" runat="server" Text='<%# Bind("totalHeroTrueDmg") %>'></asp:Label>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </asp:Panel>
+                                            </ItemTemplate>
+                                        </asp:TemplateField>
+                                    </Columns>
+                                </asp:GridView>
+                            </div>
+                            <%--<asp:GridView ID="gvMatchDetailsA" runat="server" CssClass="table table-condensed" AutoGenerateColumns="false" Font-Size="8pt">
                                 <Columns>
                                     <asp:BoundField DataField="playerId" HeaderText="游戏ID" />
                                     <asp:TemplateField HeaderText="英雄">
@@ -210,7 +577,7 @@
                                     <asp:BoundField DataField="totalHeroTrueDmg" HeaderText="给对方英雄的真实伤害" />
                                 </Columns>
                             </asp:GridView>
-                            <asp:GridView ID="gvMatchDetailsB" runat="server" CssClass="table table-bordered table-condensed" AutoGenerateColumns="false" Font-Size="8pt">
+                            <asp:GridView ID="gvMatchDetailsB" runat="server" CssClass="table table-condensed" AutoGenerateColumns="false" Font-Size="8pt">
                                 <Columns>
                                     <asp:BoundField DataField="playerId" HeaderText="游戏ID" />
                                     <asp:TemplateField HeaderText="英雄">
@@ -247,11 +614,11 @@
                                     <asp:BoundField DataField="totalHeroMagicDmg" HeaderText="给对方英雄的魔法伤害" />
                                     <asp:BoundField DataField="totalHeroTrueDmg" HeaderText="给对方英雄的真实伤害" />
                                 </Columns>
-                            </asp:GridView>
+                            </asp:GridView>--%>
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">
-                                Close</button>
+                                关闭</button>
                         </div>
                     </div>
                 </div>

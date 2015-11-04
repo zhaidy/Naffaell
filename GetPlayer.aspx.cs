@@ -21,6 +21,13 @@ public partial class GetPlayer : System.Web.UI.Page
     public IList<normal_statistics> _normal_statistics = new List<normal_statistics>(); //normal statistics
     public IList<rank_statistics> _rank_statistics = new List<rank_statistics>(); //rank statistics
     public IList<match_list> _match_list = new List<match_list>(); //match_list
+    public IList<playerMatchDetails> _playerMatchDetails = new List<playerMatchDetails>();
+    public IList<matchDetails> _matchDetailsA = new List<matchDetails>();
+    public IList<honour> _honourA = new List<honour>();
+    public IList<items> _itemA = new List<items>();
+    public IList<matchDetails> _matchDetailsB = new List<matchDetails>();
+    public IList<honour> _honourB = new List<honour>();
+    public IList<items> _itemB = new List<items>();
     string _playerId = "";
     string _server = "";
     string server = "";
@@ -134,7 +141,7 @@ public partial class GetPlayer : System.Web.UI.Page
             && x.Attributes["class"].Value.Split().Contains("avatar"));
         foreach (HtmlNode child in profileNodes)
         {
-            if(!child.InnerHtml.Contains("yy"))
+            if (!child.InnerHtml.Contains("yy"))
             {
                 level = child.SelectSingleNode("//em").InnerText;
                 playerIcon = Regex.Match(child.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
@@ -149,7 +156,7 @@ public partial class GetPlayer : System.Web.UI.Page
             first_win = child.InnerText.Replace("&nbsp;", "");
         }
         //add profile
-        _player_profile.Add(new player_profile 
+        _player_profile.Add(new player_profile
         {
             player_id = _playerId,
             server = _server,
@@ -158,7 +165,7 @@ public partial class GetPlayer : System.Web.UI.Page
             icon = playerIcon,
             first_win = first_win
         });
-        
+
         //常用英雄 : name, count
         IEnumerable<HtmlNode> com_heroNodes = htmlDocument.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
             && x.Attributes["class"].Value.Split().Contains("com-hero"));
@@ -298,6 +305,7 @@ public partial class GetPlayer : System.Web.UI.Page
                         _match_list.Add(new match_list
                         {
                             id = id,
+                            playerId = _playerId,
                             icon = icon,
                             champion_name_ch = champion_name_ch,
                             status = status,
@@ -376,7 +384,6 @@ public partial class GetPlayer : System.Web.UI.Page
             });
         }
 
-        IList<matchDetails> _matchDetailsA = new List<matchDetails>();
         IEnumerable<HtmlNode> tableADivNodes = MatchDetaildoc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("id")
             && x.Attributes["id"].Value.Split().Contains("zj-table--A"));
         foreach (HtmlNode child in tableADivNodes)
@@ -390,20 +397,41 @@ public partial class GetPlayer : System.Web.UI.Page
                     string honour = "";
                     string gold = "";
                     string KDA = "";
-                    string itemIcon = "";
-                    string itemName = "";
-                    string itemDescription = "";
+                    string itemIcon1 = "";
+                    string itemName1 = "";
+                    string itemDescription1 = "";
+                    string itemIcon2 = "";
+                    string itemName2 = "";
+                    string itemDescription2 = "";
+                    string itemIcon3 = "";
+                    string itemName3 = "";
+                    string itemDescription3 = "";
+                    string itemIcon4 = "";
+                    string itemName4 = "";
+                    string itemDescription4 = "";
+                    string itemIcon5 = "";
+                    string itemName5 = "";
+                    string itemDescription5 = "";
+                    string itemIcon6 = "";
+                    string itemName6 = "";
+                    string itemDescription6 = "";
                     HtmlNode teamNameDivNode = row.SelectSingleNode("td[@class='col1']").SelectSingleNode("div");
+                    HtmlNode playerNode = teamNameDivNode.SelectSingleNode("span[@class='avatar']").SelectSingleNode("img");
+                    player = playerNode.Attributes["data-playername"].Value;
                     HtmlNodeCollection honourNodes = teamNameDivNode.SelectNodes("em");
-                    if(honourNodes != null)
+                    if (honourNodes != null)
                     {
                         foreach (HtmlNode em in honourNodes)
                         {
-                            honour += em.Attributes["title"].Value;
+                            honour = em.Attributes["title"].Value;
+                            _honourA.Add(new honour
+                            {
+                                playerId = player,
+                                matchId = id,
+                                honourDesc = honour
+                            });
                         }
                     }
-                    HtmlNode playerNode = teamNameDivNode.SelectSingleNode("span[@class='avatar']").SelectSingleNode("img");
-                    player = playerNode.Attributes["data-playername"].Value;
                     HtmlNode goldNode = row.SelectSingleNode("td[@class='col2']");
                     gold = goldNode.InnerText;
                     HtmlNode KDANode = row.SelectSingleNode("td[@class='col3']");
@@ -412,24 +440,78 @@ public partial class GetPlayer : System.Web.UI.Page
                     HtmlNodeCollection itemNodes = itemNode.SelectNodes("li");
                     foreach (HtmlNode node in itemNodes)
                     {
-                        string test = node.SelectSingleNode("img").Attributes["title"].Value;
-                        itemIcon += Regex.Match(node.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value + " ";
-                        itemName += Regex.Match(node.SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "") + " ";
-                        itemDescription += node.SelectSingleNode("img").Attributes["title"].Value;
+                        if (itemNodes.Count > 0)
+                        {
+                            itemIcon1 = Regex.Match(itemNodes[0].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName1 = Regex.Match(itemNodes[0].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription1 = itemNodes[0].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 1)
+                        {
+                            itemIcon2 = Regex.Match(itemNodes[1].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName2 = Regex.Match(itemNodes[1].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription2 = itemNodes[1].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 2)
+                        {
+                            itemIcon3 = Regex.Match(itemNodes[2].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName3 = Regex.Match(itemNodes[2].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription3 = itemNodes[2].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 3)
+                        {
+                            itemIcon4 = Regex.Match(itemNodes[3].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName4 = Regex.Match(itemNodes[3].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription4 = itemNodes[3].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 4)
+                        {
+                            itemIcon5 = Regex.Match(itemNodes[4].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName5 = Regex.Match(itemNodes[4].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription5 = itemNodes[4].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 5)
+                        {
+                            itemIcon6 = Regex.Match(itemNodes[5].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName6 = Regex.Match(itemNodes[5].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription6 = itemNodes[5].SelectSingleNode("img").Attributes["title"].Value;
+                        }
                     }
                     _matchDetailsA.Add(new matchDetails
                     {
                         playerId = player,
-                        honour = honour,
+                        matchId = id,
                         gold = gold,
-                        KDA = KDA,
-                        itemName = itemName
+                        KDA = KDA
+
+                    });
+                    _itemA.Add(new items
+                    {
+                        playerId = player,
+                        matchId = id,
+                        itemIcon1 = itemIcon1,
+                        itemName1 = itemName1,
+                        itemDesc1 = itemDescription1,
+                        itemIcon2 = itemIcon2,
+                        itemName2 = itemName2,
+                        itemDesc2 = itemDescription2,
+                        itemIcon3 = itemIcon3,
+                        itemName3 = itemName3,
+                        itemDesc3 = itemDescription3,
+                        itemIcon4 = itemIcon4,
+                        itemName4 = itemName4,
+                        itemDesc4 = itemDescription4,
+                        itemIcon5 = itemIcon5,
+                        itemName5 = itemName5,
+                        itemDesc5 = itemDescription5,
+                        itemIcon6 = itemIcon6,
+                        itemName6 = itemName6,
+                        itemDesc6 = itemDescription6
                     });
                 }
             }
         }
 
-        IList<matchDetails> _matchDetailsB = new List<matchDetails>();
         IEnumerable<HtmlNode> tableBDivNodes = MatchDetaildoc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("id")
             && x.Attributes["id"].Value.Split().Contains("zj-table--B"));
         foreach (HtmlNode child in tableBDivNodes)
@@ -443,20 +525,41 @@ public partial class GetPlayer : System.Web.UI.Page
                     string honour = "";
                     string gold = "";
                     string KDA = "";
-                    string itemIcon = "";
-                    string itemName = "";
-                    string itemDescription = "";
+                    string itemIcon1 = "";
+                    string itemName1 = "";
+                    string itemDescription1 = "";
+                    string itemIcon2 = "";
+                    string itemName2 = "";
+                    string itemDescription2 = "";
+                    string itemIcon3 = "";
+                    string itemName3 = "";
+                    string itemDescription3 = "";
+                    string itemIcon4 = "";
+                    string itemName4 = "";
+                    string itemDescription4 = "";
+                    string itemIcon5 = "";
+                    string itemName5 = "";
+                    string itemDescription5 = "";
+                    string itemIcon6 = "";
+                    string itemName6 = "";
+                    string itemDescription6 = "";
                     HtmlNode teamNameDivNode = row.SelectSingleNode("td[@class='col1']").SelectSingleNode("div");
+                    HtmlNode playerNode = teamNameDivNode.SelectSingleNode("span[@class='avatar']").SelectSingleNode("img");
+                    player = playerNode.Attributes["data-playername"].Value;
                     HtmlNodeCollection honourNodes = teamNameDivNode.SelectNodes("em");
                     if (honourNodes != null)
                     {
                         foreach (HtmlNode em in honourNodes)
                         {
-                            honour += em.Attributes["title"].Value;
+                            honour = em.Attributes["title"].Value;
+                            _honourB.Add(new honour
+                            {
+                                playerId = player,
+                                matchId = id,
+                                honourDesc = honour
+                            });
                         }
                     }
-                    HtmlNode playerNode = teamNameDivNode.SelectSingleNode("span[@class='avatar']").SelectSingleNode("img");
-                    player = playerNode.Attributes["data-playername"].Value;
                     HtmlNode goldNode = row.SelectSingleNode("td[@class='col2']");
                     gold = goldNode.InnerText;
                     HtmlNode KDANode = row.SelectSingleNode("td[@class='col3']");
@@ -465,18 +568,73 @@ public partial class GetPlayer : System.Web.UI.Page
                     HtmlNodeCollection itemNodes = itemNode.SelectNodes("li");
                     foreach (HtmlNode node in itemNodes)
                     {
-                        string test = node.SelectSingleNode("img").Attributes["title"].Value;
-                        itemIcon += Regex.Match(node.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value + " ";
-                        itemName += Regex.Match(node.SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "") + " ";
-                        itemDescription += node.SelectSingleNode("img").Attributes["title"].Value;
+                        if (itemNodes.Count > 0)
+                        {
+                            itemIcon1 = Regex.Match(itemNodes[0].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName1 = Regex.Match(itemNodes[0].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription1 = itemNodes[0].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 1)
+                        {
+                            itemIcon2 = Regex.Match(itemNodes[1].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName2 = Regex.Match(itemNodes[1].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription2 = itemNodes[1].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 2)
+                        {
+                            itemIcon3 = Regex.Match(itemNodes[2].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName3 = Regex.Match(itemNodes[2].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription3 = itemNodes[2].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 3)
+                        {
+                            itemIcon4 = Regex.Match(itemNodes[3].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName4 = Regex.Match(itemNodes[3].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription4 = itemNodes[3].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 4)
+                        {
+                            itemIcon5 = Regex.Match(itemNodes[4].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName5 = Regex.Match(itemNodes[4].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription5 = itemNodes[4].SelectSingleNode("img").Attributes["title"].Value;
+                        }
+                        if (itemNodes.Count > 5)
+                        {
+                            itemIcon6 = Regex.Match(itemNodes[5].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName6 = Regex.Match(itemNodes[5].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription6 = itemNodes[5].SelectSingleNode("img").Attributes["title"].Value;
+                        }
                     }
                     _matchDetailsB.Add(new matchDetails
                     {
                         playerId = player,
-                        honour = honour,
+                        matchId = id,
                         gold = gold,
-                        KDA = KDA,
-                        itemName = itemName
+                        KDA = KDA
+
+                    });
+                    _itemB.Add(new items
+                    {
+                        playerId = player,
+                        matchId = id,
+                        itemIcon1 = itemIcon1,
+                        itemName1 = itemName1,
+                        itemDesc1 = itemDescription1,
+                        itemIcon2 = itemIcon2,
+                        itemName2 = itemName2,
+                        itemDesc2 = itemDescription2,
+                        itemIcon3 = itemIcon3,
+                        itemName3 = itemName3,
+                        itemDesc3 = itemDescription3,
+                        itemIcon4 = itemIcon4,
+                        itemName4 = itemName4,
+                        itemDesc4 = itemDescription4,
+                        itemIcon5 = itemIcon5,
+                        itemName5 = itemName5,
+                        itemDesc5 = itemDescription5,
+                        itemIcon6 = itemIcon6,
+                        itemName6 = itemName6,
+                        itemDesc6 = itemDescription6
                     });
                 }
             }
@@ -484,7 +642,6 @@ public partial class GetPlayer : System.Web.UI.Page
 
         IEnumerable<HtmlNode> playerTipsNodes = MatchDetaildoc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
             && x.Attributes["class"].Value.Split().Contains("layer"));
-        IList<playerMatchDetails> _playerMatchDetails = new List<playerMatchDetails>();
         foreach (HtmlNode child in playerTipsNodes)
         {
             string warScore = "";
@@ -596,6 +753,7 @@ public partial class GetPlayer : System.Web.UI.Page
             string test = divTopLeft.SelectSingleNode("p[@class='tip-user-name']").InnerText.Replace(" ", "").Replace("\r\n", "");
             _playerMatchDetails.Add(new playerMatchDetails
             {
+                matchId = id,
                 playerId = divTopLeft.SelectSingleNode("p[@class='tip-user-name']").InnerText.Replace(" ", "").Replace("\r\n", ""),
                 champion_name_ch = divTopLeft.SelectSingleNode("div[@class='tip-user-detail']").SelectSingleNode("span[@class='tip-tip-user-name2']").InnerText,
                 champIcon = champIcon,
@@ -623,47 +781,13 @@ public partial class GetPlayer : System.Web.UI.Page
 
         var _joinedMatchDetailsA = from ma in _matchDetailsA
                                    join pmd in _playerMatchDetails
-                                   on ma.playerId equals pmd.playerId
+                                   on new { mId = ma.matchId, pId = ma.playerId } equals new { mId = pmd.matchId, pId = pmd.playerId }
                                    select new
                                    {
-                                        ma.playerId,
-                                        ma.honour,
-                                        ma.gold,
-                                        ma.KDA,
-                                        ma.itemName,
-                                        pmd.champion_name ,
-                                        pmd.champion_name_ch ,
-                                        pmd.champIcon ,
-                                        pmd.firstSpellIcon ,
-                                        pmd.secondSpellIcon ,
-                                        pmd.warScore ,
-                                        pmd.lastHits ,
-                                        pmd.creeps ,
-                                        pmd.towersDestroyed ,
-                                        pmd.barracksDestroyed ,
-                                        pmd.wards ,
-                                        pmd.dewards ,
-                                        pmd.maxContKills ,
-                                        pmd.maxMultiKills ,
-                                        pmd.maxCrit ,
-                                        pmd.totalHeal ,
-                                        pmd.totalDmg ,
-                                        pmd.totalTank ,
-                                        pmd.totalHeroDmg ,
-                                        pmd.totalHeroPhyDmg ,
-                                        pmd.totalHeroMagicDmg ,
-                                        pmd.totalHeroTrueDmg 
-                                   };
-        var _joinedMatchDetailsB = from mb in _matchDetailsB
-                                   join pmd in _playerMatchDetails
-                                   on mb.playerId equals pmd.playerId
-                                   select new
-                                   {
-                                       mb.playerId,
-                                       mb.honour,
-                                       mb.gold,
-                                       mb.KDA,
-                                       mb.itemName,
+                                       ma.matchId,
+                                       ma.playerId,
+                                       ma.gold,
+                                       ma.KDA,
                                        pmd.champion_name,
                                        pmd.champion_name_ch,
                                        pmd.champIcon,
@@ -687,6 +811,39 @@ public partial class GetPlayer : System.Web.UI.Page
                                        pmd.totalHeroMagicDmg,
                                        pmd.totalHeroTrueDmg
                                    };
+        var _joinedMatchDetailsB = from mb in _matchDetailsB
+                                   join pmd in _playerMatchDetails
+                                   on new { mId = mb.matchId, pId = mb.playerId } equals new { mId = pmd.matchId, pId = pmd.playerId }
+                                   select new
+                                   {
+                                       mb.matchId,
+                                       mb.playerId,
+                                       mb.gold,
+                                       mb.KDA,
+                                       pmd.champion_name,
+                                       pmd.champion_name_ch,
+                                       pmd.champIcon,
+                                       pmd.firstSpellIcon,
+                                       pmd.secondSpellIcon,
+                                       pmd.warScore,
+                                       pmd.lastHits,
+                                       pmd.creeps,
+                                       pmd.towersDestroyed,
+                                       pmd.barracksDestroyed,
+                                       pmd.wards,
+                                       pmd.dewards,
+                                       pmd.maxContKills,
+                                       pmd.maxMultiKills,
+                                       pmd.maxCrit,
+                                       pmd.totalHeal,
+                                       pmd.totalDmg,
+                                       pmd.totalTank,
+                                       pmd.totalHeroDmg,
+                                       pmd.totalHeroPhyDmg,
+                                       pmd.totalHeroMagicDmg,
+                                       pmd.totalHeroTrueDmg
+                                   };
+
         gvMatchHeader.DataSource = _matchHeader;
         gvMatchHeader.DataBind();
         gvMatchDetailsA.DataSource = _joinedMatchDetailsA;
@@ -695,6 +852,128 @@ public partial class GetPlayer : System.Web.UI.Page
         gvMatchDetailsB.DataBind();
 
         ScriptManager.RegisterClientScriptBlock(upDetails, upDetails.GetType(), "showDetails", "showDetails()", true);
+    }
+    protected void gvMatchDetailsA_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            string matchId = gvMatchDetailsA.DataKeys[e.Row.RowIndex].Value.ToString();
+            GridView gvItemsA = e.Row.FindControl("gvItemsA") as GridView;
+            System.Web.UI.WebControls.Label lblPlayerId = e.Row.FindControl("lblPlayerId") as System.Web.UI.WebControls.Label;
+            string playerId = lblPlayerId.Text;
+            var _joinedItemsA = from ma in _matchDetailsA
+                                join ia in _itemA
+                                on new { mId = ma.matchId, pId = ma.playerId } equals new { mId = ia.matchId, pId = ia.playerId }
+                                select new
+                                {
+                                    ma.matchId,
+                                    ma.playerId,
+                                    ia.itemName1,
+                                    ia.itemIcon1,
+                                    ia.itemDesc1,
+                                    ia.itemName2,
+                                    ia.itemIcon2,
+                                    ia.itemDesc2,
+                                    ia.itemName3,
+                                    ia.itemIcon3,
+                                    ia.itemDesc3,
+                                    ia.itemName4,
+                                    ia.itemIcon4,
+                                    ia.itemDesc4,
+                                    ia.itemName5,
+                                    ia.itemIcon5,
+                                    ia.itemDesc5,
+                                    ia.itemName6,
+                                    ia.itemIcon6,
+                                    ia.itemDesc6
+                                };
+            var _itemsA = from ia in _joinedItemsA
+                          where ia.matchId == matchId && ia.playerId == playerId
+                          select new
+                          {
+                              ia.itemName1,
+                              ia.itemIcon1,
+                              ia.itemDesc1,
+                              ia.itemName2,
+                              ia.itemIcon2,
+                              ia.itemDesc2,
+                              ia.itemName3,
+                              ia.itemIcon3,
+                              ia.itemDesc3,
+                              ia.itemName4,
+                              ia.itemIcon4,
+                              ia.itemDesc4,
+                              ia.itemName5,
+                              ia.itemIcon5,
+                              ia.itemDesc5,
+                              ia.itemName6,
+                              ia.itemIcon6,
+                              ia.itemDesc6
+                          };
+            gvItemsA.DataSource = _itemsA;
+            gvItemsA.DataBind();
+        }
+    }
+    protected void gvMatchDetailsB_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            string matchId = gvMatchDetailsA.DataKeys[e.Row.RowIndex].Value.ToString();
+            GridView gvItemsB = e.Row.FindControl("gvItemsB") as GridView;
+            System.Web.UI.WebControls.Label lblPlayerId = e.Row.FindControl("lblPlayerId") as System.Web.UI.WebControls.Label;
+            string playerId = lblPlayerId.Text;
+            var _joinedItemsB = from mb in _matchDetailsB
+                                join ib in _itemB
+                                on new { mId = mb.matchId, pId = mb.playerId } equals new { mId = ib.matchId, pId = ib.playerId }
+                                select new
+                                {
+                                    mb.matchId,
+                                    mb.playerId,
+                                    ib.itemName1,
+                                    ib.itemIcon1,
+                                    ib.itemDesc1,
+                                    ib.itemName2,
+                                    ib.itemIcon2,
+                                    ib.itemDesc2,
+                                    ib.itemName3,
+                                    ib.itemIcon3,
+                                    ib.itemDesc3,
+                                    ib.itemName4,
+                                    ib.itemIcon4,
+                                    ib.itemDesc4,
+                                    ib.itemName5,
+                                    ib.itemIcon5,
+                                    ib.itemDesc5,
+                                    ib.itemName6,
+                                    ib.itemIcon6,
+                                    ib.itemDesc6
+                                };
+            var _itemsB = from ib in _joinedItemsB
+                          where ib.matchId == matchId && ib.playerId == playerId
+                          select new
+                          {
+                              ib.itemName1,
+                              ib.itemIcon1,
+                              ib.itemDesc1,
+                              ib.itemName2,
+                              ib.itemIcon2,
+                              ib.itemDesc2,
+                              ib.itemName3,
+                              ib.itemIcon3,
+                              ib.itemDesc3,
+                              ib.itemName4,
+                              ib.itemIcon4,
+                              ib.itemDesc4,
+                              ib.itemName5,
+                              ib.itemIcon5,
+                              ib.itemDesc5,
+                              ib.itemName6,
+                              ib.itemIcon6,
+                              ib.itemDesc6
+                          };
+            gvItemsB.DataSource = _itemsB;
+            gvItemsB.DataBind();
+        }
     }
     public class player_profile
     {
@@ -770,6 +1049,7 @@ public partial class GetPlayer : System.Web.UI.Page
     public class match_list
     {
         public string id { get; set; }
+        public string playerId { get; set; }
         public string champion_name_ch { get; set; }
         public string icon { get; set; }
         public string status { get; set; }
@@ -786,22 +1066,43 @@ public partial class GetPlayer : System.Web.UI.Page
     }
     public class matchDetails
     {
+        public string matchId { get; set; }
         public string playerId { get; set; }
-        public string honour { get; set; }
         public string gold { get; set; }
         public string KDA { get; set; }
-        public string itemIcon { get; set; }
-        public string itemName { get; set; }
-        public string itemDesc { get; set; }
+    }
+    public class honour
+    {
+        public string playerId { get; set; }
+        public string matchId { get; set; }
+        public string honourDesc { get; set; }
     }
     public class items
     {
-        public string icon { get; set; }
-        public string name { get; set; }
-        public string description { get; set; }
+        public string playerId { get; set; }
+        public string matchId { get; set; }
+        public string itemIcon1 { get; set; }
+        public string itemName1 { get; set; }
+        public string itemDesc1 { get; set; }
+        public string itemIcon2 { get; set; }
+        public string itemName2 { get; set; }
+        public string itemDesc2 { get; set; }
+        public string itemIcon3 { get; set; }
+        public string itemName3 { get; set; }
+        public string itemDesc3 { get; set; }
+        public string itemIcon4 { get; set; }
+        public string itemName4 { get; set; }
+        public string itemDesc4 { get; set; }
+        public string itemIcon5 { get; set; }
+        public string itemName5 { get; set; }
+        public string itemDesc5 { get; set; }
+        public string itemIcon6 { get; set; }
+        public string itemName6 { get; set; }
+        public string itemDesc6 { get; set; }
     }
     public class playerMatchDetails
     {
+        public string matchId { get; set; }
         public string playerId { get; set; }
         public string champion_name { get; set; }
         public string champion_name_ch { get; set; }

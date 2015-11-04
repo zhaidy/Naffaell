@@ -8,16 +8,17 @@
     <link rel="stylesheet" href="~/Styles/bootstrap.min.css" />
     <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
     <script type="text/javascript">
-        $(document).ready(function () {
-            $($("#NavigationMenu ul")[0]).addClass("navbar-nav");
-            $($("#NavigationMenu ul")[1]).addClass("dropdown-menu");
-        });
+        //$(document).ready(function () {
+        //    $($("#NavigationMenu ul")[0]).addClass("navbar-nav");
+        //    $($("#NavigationMenu ul")[1]).addClass("dropdown-menu");
+        //});
     </script>
     <style type="text/css">
         body {
             padding-top: 50px;
             margin-bottom: 60px;
             font-size: small;
+            font-family: Tahoma, Arial, Helvetica, "Microsoft YaHei New", "Microsoft Yahei", "微软雅黑", 宋体, SimSun, STXihei, "华文细黑", sans-serif;
         }
     </style>
 </head>
@@ -29,7 +30,7 @@
                 <div class="navbar-header">
                     <asp:HyperLink ID="hlHeader" runat="server" Text="Naffaell" CssClass="navbar-brand" NavigateUrl="~/GetPlayer.aspx"></asp:HyperLink>
                 </div>
-                <div class="navbar-default" id="navMenu">
+                <%--<div class="navbar-default" id="navMenu">
                     <ul class="nav navbar-nav">
                         <asp:Menu ID="NavigationMenu" runat="server" Orientation="Horizontal"
                             CssClass="menu">
@@ -38,7 +39,7 @@
                             </Items>
                         </asp:Menu>
                     </ul>
-                </div>
+                </div>--%>
             </div>
         </div>
         <div class="container-fluid">

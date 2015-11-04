@@ -414,6 +414,9 @@ public partial class GetPlayer : System.Web.UI.Page
                     string itemIcon6 = "";
                     string itemName6 = "";
                     string itemDescription6 = "";
+                    string itemIcon7 = "";
+                    string itemName7 = "";
+                    string itemDescription7 = "";
                     HtmlNode teamNameDivNode = row.SelectSingleNode("td[@class='col1']").SelectSingleNode("div");
                     HtmlNode playerNode = teamNameDivNode.SelectSingleNode("span[@class='avatar']").SelectSingleNode("img");
                     player = playerNode.Attributes["data-playername"].Value;
@@ -475,6 +478,12 @@ public partial class GetPlayer : System.Web.UI.Page
                             itemName6 = Regex.Match(itemNodes[5].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
                             itemDescription6 = itemNodes[5].SelectSingleNode("img").Attributes["title"].Value;
                         }
+                        if (itemNodes.Count > 6)
+                        {
+                            itemIcon7 = Regex.Match(itemNodes[6].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName7 = Regex.Match(itemNodes[6].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription7 = itemNodes[6].SelectSingleNode("img").Attributes["title"].Value;
+                        }
                     }
                     _matchDetailsA.Add(new matchDetails
                     {
@@ -505,7 +514,10 @@ public partial class GetPlayer : System.Web.UI.Page
                         itemDesc5 = itemDescription5,
                         itemIcon6 = itemIcon6,
                         itemName6 = itemName6,
-                        itemDesc6 = itemDescription6
+                        itemDesc6 = itemDescription6,
+                        itemIcon7 = itemIcon7,
+                        itemName7 = itemName7,
+                        itemDesc7 = itemDescription7
                     });
                 }
             }
@@ -542,6 +554,9 @@ public partial class GetPlayer : System.Web.UI.Page
                     string itemIcon6 = "";
                     string itemName6 = "";
                     string itemDescription6 = "";
+                    string itemIcon7 = "";
+                    string itemName7 = "";
+                    string itemDescription7 = "";
                     HtmlNode teamNameDivNode = row.SelectSingleNode("td[@class='col1']").SelectSingleNode("div");
                     HtmlNode playerNode = teamNameDivNode.SelectSingleNode("span[@class='avatar']").SelectSingleNode("img");
                     player = playerNode.Attributes["data-playername"].Value;
@@ -603,6 +618,12 @@ public partial class GetPlayer : System.Web.UI.Page
                             itemName6 = Regex.Match(itemNodes[5].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
                             itemDescription6 = itemNodes[5].SelectSingleNode("img").Attributes["title"].Value;
                         }
+                        if (itemNodes.Count > 6)
+                        {
+                            itemIcon7 = Regex.Match(itemNodes[6].InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            itemName7 = Regex.Match(itemNodes[6].SelectSingleNode("img").Attributes["title"].Value, @".+\s").Value.Replace(" ", "");
+                            itemDescription7 = itemNodes[6].SelectSingleNode("img").Attributes["title"].Value;
+                        }
                     }
                     _matchDetailsB.Add(new matchDetails
                     {
@@ -633,7 +654,10 @@ public partial class GetPlayer : System.Web.UI.Page
                         itemDesc5 = itemDescription5,
                         itemIcon6 = itemIcon6,
                         itemName6 = itemName6,
-                        itemDesc6 = itemDescription6
+                        itemDesc6 = itemDescription6,
+                        itemIcon7 = itemIcon7,
+                        itemName7 = itemName7,
+                        itemDesc7 = itemDescription7
                     });
                 }
             }
@@ -884,7 +908,10 @@ public partial class GetPlayer : System.Web.UI.Page
                                     ia.itemDesc5,
                                     ia.itemName6,
                                     ia.itemIcon6,
-                                    ia.itemDesc6
+                                    ia.itemDesc6,
+                                    ia.itemName7,
+                                    ia.itemIcon7,
+                                    ia.itemDesc7
                                 };
             var _itemsA = from ia in _joinedItemsA
                           where ia.matchId == matchId && ia.playerId == playerId
@@ -907,7 +934,10 @@ public partial class GetPlayer : System.Web.UI.Page
                               ia.itemDesc5,
                               ia.itemName6,
                               ia.itemIcon6,
-                              ia.itemDesc6
+                              ia.itemDesc6,
+                              ia.itemName7,
+                              ia.itemIcon7,
+                              ia.itemDesc7
                           };
             gvItemsA.DataSource = _itemsA;
             gvItemsA.DataBind();
@@ -945,7 +975,10 @@ public partial class GetPlayer : System.Web.UI.Page
                                     ib.itemDesc5,
                                     ib.itemName6,
                                     ib.itemIcon6,
-                                    ib.itemDesc6
+                                    ib.itemDesc6,
+                                    ib.itemName7,
+                                    ib.itemIcon7,
+                                    ib.itemDesc7
                                 };
             var _itemsB = from ib in _joinedItemsB
                           where ib.matchId == matchId && ib.playerId == playerId
@@ -968,7 +1001,10 @@ public partial class GetPlayer : System.Web.UI.Page
                               ib.itemDesc5,
                               ib.itemName6,
                               ib.itemIcon6,
-                              ib.itemDesc6
+                              ib.itemDesc6,
+                              ib.itemName7,
+                              ib.itemIcon7,
+                              ib.itemDesc7
                           };
             gvItemsB.DataSource = _itemsB;
             gvItemsB.DataBind();
@@ -1098,6 +1134,9 @@ public partial class GetPlayer : System.Web.UI.Page
         public string itemIcon6 { get; set; }
         public string itemName6 { get; set; }
         public string itemDesc6 { get; set; }
+        public string itemIcon7 { get; set; }
+        public string itemName7 { get; set; }
+        public string itemDesc7 { get; set; }
     }
     public class playerMatchDetails
     {

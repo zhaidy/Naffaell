@@ -6,6 +6,7 @@
     <asp:ContentPlaceHolder ID="head" runat="server">
     </asp:ContentPlaceHolder>
     <link rel="stylesheet" href="~/Styles/bootstrap.min.css" />
+    <link href="Styles/StyleSheet.css" rel="stylesheet" />
     <script src="https://code.jquery.com/jquery-2.1.1.min.js" type="text/javascript"></script>
     <script type="text/javascript">
         //$(document).ready(function () {
@@ -20,6 +21,7 @@
             font-size: small;
             font-family: Tahoma, Arial, Helvetica, "Microsoft YaHei New", "Microsoft Yahei", "微软雅黑", 宋体, SimSun, STXihei, "华文细黑", sans-serif;
         }
+        .table>thead>tr>td,.table>thead>tr>th{padding:8px;line-height:1.42857143;vertical-align:middle;border-top:1px solid #ddd}
         .pagination-ys
         {
             padding-left: 0;

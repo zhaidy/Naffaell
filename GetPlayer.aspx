@@ -10,6 +10,7 @@
             border-left: transparent;
             border-right: transparent;
         }
+
         .tableA th {
             padding: 10px 5px;
             text-align: center;
@@ -18,6 +19,7 @@
             border-left: transparent;
             border-right: transparent;
         }
+
         .tableB td {
             padding: 10px 5px;
             text-align: center;
@@ -26,6 +28,7 @@
             border-left: transparent;
             border-right: transparent;
         }
+
         .tableB th {
             padding: 10px 5px;
             text-align: center;
@@ -108,7 +111,7 @@
             <ContentTemplate>
                 <asp:Label ID="lblMsg" runat="server" Text=""></asp:Label>
                 <asp:GridView ID="gvPlayerProfile" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" 
-                    Style="border-right: transparent; border-left: transparent; border: transparent;" Caption="召唤师">
+                    Style="border-right: transparent; border-left: transparent; border: transparent;" Caption="召唤师" DataKeyNames="player_id"  OnRowDataBound="gvPlayerProfile_RowDataBound">
                     <Columns>
                         <asp:TemplateField HeaderText="头像">
                             <ItemTemplate>
@@ -119,7 +122,18 @@
                         <asp:BoundField DataField="server" HeaderText="大区" />
                         <asp:BoundField DataField="level" HeaderText="等级" />
                         <asp:BoundField DataField="fighting" HeaderText="战斗力" />
-                        <asp:BoundField DataField="first_win" HeaderText="首胜" />
+                        <asp:TemplateField HeaderText="常用英雄">
+                            <ItemTemplate>
+                                <asp:DataList ID="dlComChamp"
+                                    RepeatDirection="Horizontal"
+                                    RepeatLayout="Table"
+                                    RepeatColumns="0" runat="server" ShowHeader="false" HorizontalAlign="Center">
+                                    <ItemTemplate>
+                                        <asp:Image ID="champIcon" runat="server" ImageUrl='<%# Bind("icon") %>' ToolTip='<%# Eval("champion_name_ch") + " " + Eval("count") + "次" %>' />
+                                    </ItemTemplate>
+                                </asp:DataList>
+                            </ItemTemplate>
+                        </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
                 <asp:GridView ID="gvNormalStat" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="匹配"
@@ -144,7 +158,7 @@
                         <asp:BoundField DataField="matches_lost" HeaderText="负场" />
                     </Columns>
                 </asp:GridView>
-                <asp:GridView ID="gvComChamp" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="常用英雄"
+                <%--<asp:GridView ID="gvComChamp" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="常用英雄"
                     Style="border-right: transparent; border-left: transparent; border: transparent;">
                     <Columns>
                         <asp:TemplateField HeaderText="头像">
@@ -155,7 +169,7 @@
                         <asp:BoundField DataField="champion_name_ch" HeaderText="英雄" />
                         <asp:BoundField DataField="count" HeaderText="次数" />
                     </Columns>
-                </asp:GridView>
+                </asp:GridView>--%>
                 <asp:GridView ID="gvPlayedChamps" runat="server" CssClass="table table-condensed tableA" AutoGenerateColumns="false" Caption="英雄记录"
                     Style="border-right: transparent; border-left: transparent; border: transparent;" AllowPaging="True" PageSize="8" OnPageIndexChanging="gvPlayedChamps_PageIndexChanging">
                     <Columns>

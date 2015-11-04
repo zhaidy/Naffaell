@@ -69,8 +69,8 @@ public partial class GetPlayer : System.Web.UI.Page
             gvPlayerProfile.DataBind();
             gvRankStat.DataSource = null;
             gvRankStat.DataBind();
-            gvComChamp.DataSource = null;
-            gvComChamp.DataBind();
+            //gvComChamp.DataSource = null;
+            //gvComChamp.DataBind();
             gvMatchList.DataSource = null;
             gvMatchList.DataBind();
             gvNormalStat.DataSource = null;
@@ -282,8 +282,6 @@ public partial class GetPlayer : System.Web.UI.Page
         
         gvPlayerProfile.DataSource = _player_profile;
         gvPlayerProfile.DataBind();
-        gvComChamp.DataSource = _com_champ;
-        gvComChamp.DataBind();
         gvNormalStat.DataSource = _normal_statistics;
         gvNormalStat.DataBind();
         gvRankStat.DataSource = _rank_statistics;
@@ -834,6 +832,20 @@ public partial class GetPlayer : System.Web.UI.Page
         gvMatchDetailsB.DataBind();
 
         ScriptManager.RegisterClientScriptBlock(upDetails, upDetails.GetType(), "showDetails", "showDetails()", true);
+    }
+    protected void gvPlayerProfile_RowDataBound(object sender, GridViewRowEventArgs e)
+    {
+        if (e.Row.RowType == DataControlRowType.DataRow)
+        {
+            string playerId = gvPlayerProfile.DataKeys[e.Row.RowIndex].Value.ToString();
+            DataList dlComChamp = e.Row.FindControl("dlComChamp") as DataList;
+
+            if (_com_champ != null)
+            {
+                dlComChamp.DataSource = _com_champ;
+                dlComChamp.DataBind();
+            }
+        }
     }
     protected void gvMatchDetailsA_RowDataBound(object sender, GridViewRowEventArgs e)
     {

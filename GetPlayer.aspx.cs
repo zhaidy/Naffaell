@@ -19,6 +19,7 @@ public partial class GetPlayer : System.Web.UI.Page
     public IList<player_profile> _player_profile = new List<player_profile>(); //Player Profile : player_id, server, fighting
     public IList<normal_statistics> _normal_statistics = new List<normal_statistics>(); //normal statistics
     public IList<rank_statistics> _rank_statistics = new List<rank_statistics>(); //rank statistics
+    public IList<played_champs_display> _played_champs_display = new List<played_champs_display>();
     public IList<match_list> _match_list = new List<match_list>(); //match_list
     public IList<playerMatchDetails> _playerMatchDetails = new List<playerMatchDetails>();
     public IList<matchDetails> _matchDetailsA = new List<matchDetails>();
@@ -42,11 +43,41 @@ public partial class GetPlayer : System.Web.UI.Page
     {
         _playerId = txtPlayerId.Text;
         _server = dpServer.SelectedValue;
+        Session["_server"] = _server;
+        Session["_playerId"] = _playerId;
         server = System.Web.HttpUtility.UrlEncode(dpServer.SelectedValue, System.Text.Encoding.UTF8);
         playerId = System.Web.HttpUtility.UrlEncode(txtPlayerId.Text, System.Text.Encoding.UTF8);
+        Session["server"] = server;
+        Session["playerId"] = playerId;
 
-        sendRequest(server, playerId);
-        parseHtml(server, playerId);
+        string url = "http://lolbox.duowan.com/playerDetail.php?serverName=" + server + "&playerName=" + playerId;
+        var getHtmlWeb = new HtmlWeb();
+        var htmlDocument = getHtmlWeb.Load(url);
+        HtmlNode bodyNode = htmlDocument.DocumentNode.SelectSingleNode("//body");
+
+        if (!bodyNode.InnerHtml.Contains("暂无数据"))
+        {
+            lblMsg.Text = "";
+            lblMsg2.Text = "";
+            sendRequest(server, playerId);
+            parseHtml(server, playerId);
+        }
+        else
+        {
+            lblMsg.Text = "暂无数据";
+            gvPlayerProfile.DataSource = null;
+            gvPlayerProfile.DataBind();
+            gvRankStat.DataSource = null;
+            gvRankStat.DataBind();
+            gvComChamp.DataSource = null;
+            gvComChamp.DataBind();
+            gvMatchList.DataSource = null;
+            gvMatchList.DataBind();
+            gvNormalStat.DataSource = null;
+            gvNormalStat.DataBind();
+            gvPlayedChamps.DataSource = null;
+            gvPlayedChamps.DataBind();
+        }
     }
     private void sendRequest(string server, string playerId)
     {
@@ -243,92 +274,20 @@ public partial class GetPlayer : System.Web.UI.Page
             }
         }
 
-        //new comChamp
-        string comHeroUrl = "http://lolbox.duowan.com/new/api/index.php?_do=personal/championslist&serverName=" + server + "&playerName=" + playerId;
-        string json = "";
-        using (WebClient wc = new WebClient())
-        {
-            json = wc.DownloadString(comHeroUrl);
-        }
-        IList<played_champs_display> _played_champs_display = new List<played_champs_display>();
-        played_champs playedChamps = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<played_champs>(json);
+        //bind com champ
+        bindGvPlayedChamps(server, playerId);
 
-        for (int i = 0; i < playedChamps.content.Count; i++)
-        {
-            string averageKDAString = string.Join("/", playedChamps.content[i].averageKDA);
-            string averageDamageString = playedChamps.content[i].averageDamage.First();
-            string averageEarnString = playedChamps.content[i].averageEarn.First();
-            _played_champs_display.Add(new played_champs_display
-            {
-                icon = "http://img.lolbox.duowan.com/champions/" + playedChamps.content[i].championName + "_40x40.jpg",
-                championName = playedChamps.content[i].championName,
-                championNameCN = playedChamps.content[i].championNameCN,
-                winRate = playedChamps.content[i].winRate,
-                matchStat = playedChamps.content[i].matchStat,
-                averageKDA = averageKDAString,
-                averageKDARating = playedChamps.content[i].averageKDARating,
-                averageDamage = averageDamageString,
-                averageEarn = averageEarnString,
-                averageMinionsKilled = playedChamps.content[i].averageMinionsKilled,
-                totalMVP = playedChamps.content[i].totalMVP,
-                totalHope = playedChamps.content[i].totalHope
-            });
-        }
-
-        //get match list
-        string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
-        for (int i = 1; i <= 8; i++)
-        {
-            var getMatchHistoryWeb = new HtmlWeb();
-            var doc = getMatchHistoryWeb.Load(matchListUrl + "&page=" + i.ToString());
-
-            HtmlNode matchHistorybodyNode = doc.DocumentNode.SelectSingleNode("//body");
-
-            //match_list
-            IEnumerable<HtmlNode> historyNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
-                && x.Attributes["class"].Value.Split().Contains("l-box"));
-            foreach (HtmlNode child in historyNodes)
-            {
-                foreach (HtmlNode ul in child.SelectNodes("ul"))
-                {
-                    foreach (HtmlNode li in ul.SelectNodes("li"))
-                    {
-                        string id = li.Attributes["id"].Value.Substring(3);
-                        HtmlNode championSpan = li.SelectSingleNode("span[@class='avatar']");
-                        string icon = Regex.Match(championSpan.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
-                        string champion_name_ch = championSpan.SelectSingleNode("img").Attributes["title"].Value;
-                        string status = li.SelectSingleNode("p").SelectSingleNode("em").InnerText;
-                        HtmlNode modeNode = li.SelectSingleNode("p[@class='info']").SelectSingleNode("span[@class='game']");
-                        string mode = modeNode.InnerText;
-                        string date = Regex.Replace(li.SelectSingleNode("p[@class='info']").LastChild.InnerText, @"\s", "").Replace("&nbsp;", "");
-                        _match_list.Add(new match_list
-                        {
-                            id = id,
-                            playerId = _playerId,
-                            icon = icon,
-                            champion_name_ch = champion_name_ch,
-                            status = status,
-                            mode = mode,
-                            date = date
-                        });
-                    }
-                }
-            }
-        }
-
-
+        //bind match list
+        bindGvMatchList(server, playerId);
+        
         gvPlayerProfile.DataSource = _player_profile;
         gvPlayerProfile.DataBind();
-        gvPlayedChamps.DataSource = _played_champs_display;
-        gvPlayedChamps.DataBind();
         gvComChamp.DataSource = _com_champ;
         gvComChamp.DataBind();
         gvNormalStat.DataSource = _normal_statistics;
         gvNormalStat.DataBind();
         gvRankStat.DataSource = _rank_statistics;
         gvRankStat.DataBind();
-        gvMatchList.DataSource = _match_list;
-        gvMatchList.DataBind();
     }
     protected void btnMatchDetail_Click(object sender, EventArgs e)
     {
@@ -951,6 +910,10 @@ public partial class GetPlayer : System.Web.UI.Page
             GridView gvItemsB = e.Row.FindControl("gvItemsB") as GridView;
             System.Web.UI.WebControls.Label lblPlayerId = e.Row.FindControl("lblPlayerId") as System.Web.UI.WebControls.Label;
             string playerId = lblPlayerId.Text;
+            if(playerId == Session["_playerId"].ToString())
+            {
+                lblPlayerId.Attributes.Add("style", "font-weight: bold;");
+            }
             var _joinedItemsB = from mb in _matchDetailsB
                                 join ib in _itemB
                                 on new { mId = mb.matchId, pId = mb.playerId } equals new { mId = ib.matchId, pId = ib.playerId }
@@ -1009,6 +972,106 @@ public partial class GetPlayer : System.Web.UI.Page
             gvItemsB.DataSource = _itemsB;
             gvItemsB.DataBind();
         }
+    }
+    protected void bindGvPlayedChamps(string server, string playerId)
+    {
+        //new comChamp
+        string comHeroUrl = "http://lolbox.duowan.com/new/api/index.php?_do=personal/championslist&serverName=" + server + "&playerName=" + playerId;
+        string json = "";
+        using (WebClient wc = new WebClient())
+        {
+            json = wc.DownloadString(comHeroUrl);
+        }
+        if (!json.Contains("empty data"))
+        {
+            played_champs playedChamps = new System.Web.Script.Serialization.JavaScriptSerializer().Deserialize<played_champs>(json);
+
+            for (int i = 0; i < playedChamps.content.Count; i++)
+            {
+                string averageKDAString = string.Join("/", playedChamps.content[i].averageKDA);
+                string averageDamageString = playedChamps.content[i].averageDamage.First();
+                string averageEarnString = playedChamps.content[i].averageEarn.First();
+                _played_champs_display.Add(new played_champs_display
+                {
+                    icon = "http://img.lolbox.duowan.com/champions/" + playedChamps.content[i].championName + "_40x40.jpg",
+                    championName = playedChamps.content[i].championName,
+                    championNameCN = playedChamps.content[i].championNameCN,
+                    winRate = playedChamps.content[i].winRate,
+                    matchStat = playedChamps.content[i].matchStat,
+                    averageKDA = averageKDAString,
+                    averageKDARating = playedChamps.content[i].averageKDARating,
+                    averageDamage = averageDamageString,
+                    averageEarn = averageEarnString,
+                    averageMinionsKilled = playedChamps.content[i].averageMinionsKilled,
+                    totalMVP = playedChamps.content[i].totalMVP,
+                    totalHope = playedChamps.content[i].totalHope
+                });
+            }
+        }
+        gvPlayedChamps.DataSource = _played_champs_display;
+        gvPlayedChamps.DataBind();
+    }
+    private void bindGvMatchList(string server, string playerId)
+    {
+        //get match list
+        string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
+        for (int i = 1; i <= 8; i++)
+        {
+            var getMatchHistoryWeb = new HtmlWeb();
+            var doc = getMatchHistoryWeb.Load(matchListUrl + "&page=" + i.ToString());
+
+            HtmlNode matchHistorybodyNode = doc.DocumentNode.SelectSingleNode("//body");
+
+            //match_list
+            IEnumerable<HtmlNode> historyNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
+                && x.Attributes["class"].Value.Split().Contains("l-box"));
+            foreach (HtmlNode child in historyNodes)
+            {
+                foreach (HtmlNode ul in child.SelectNodes("ul"))
+                {
+                    foreach (HtmlNode li in ul.SelectNodes("li"))
+                    {
+                        if(li.Attributes["id"] != null)
+                        {
+                            string id = li.Attributes["id"].Value.Substring(3);
+                            HtmlNode championSpan = li.SelectSingleNode("span[@class='avatar']");
+                            string icon = Regex.Match(championSpan.InnerHtml, "<img.+?src=[\"'](.+?)[\"'].*?>", RegexOptions.IgnoreCase).Groups[1].Value;
+                            string champion_name_ch = championSpan.SelectSingleNode("img").Attributes["title"].Value;
+                            string status = li.SelectSingleNode("p").SelectSingleNode("em").InnerText;
+                            HtmlNode modeNode = li.SelectSingleNode("p[@class='info']").SelectSingleNode("span[@class='game']");
+                            string mode = modeNode.InnerText;
+                            string date = Regex.Replace(li.SelectSingleNode("p[@class='info']").LastChild.InnerText, @"\s", "").Replace("&nbsp;", "");
+                            _match_list.Add(new match_list
+                            {
+                                id = id,
+                                playerId = _playerId,
+                                icon = icon,
+                                champion_name_ch = champion_name_ch,
+                                status = status,
+                                mode = mode,
+                                date = date
+                            });
+                        }
+                        else
+                        {
+                            lblMsg2.Text = "由于未知原因，此场比赛消失在遥远的二次元空间中";
+                        }
+                    }
+                }
+            }
+        }
+        gvMatchList.DataSource = _match_list;
+        gvMatchList.DataBind();
+    }
+    protected void gvPlayedChamps_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        gvPlayedChamps.PageIndex = e.NewPageIndex;
+        bindGvPlayedChamps(Session["server"].ToString(), Session["playerId"].ToString());
+    }
+    protected void gvMatchList_PageIndexChanging(object sender, GridViewPageEventArgs e)
+    {
+        gvMatchList.PageIndex = e.NewPageIndex;
+        bindGvMatchList(Session["server"].ToString(), Session["playerId"].ToString());
     }
     public class player_profile
     {

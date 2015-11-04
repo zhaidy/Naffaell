@@ -44,10 +44,10 @@
         }
         $(document).on('click', '[src*=plus]', function (e) {
             $(this).closest("tr").after("<tr><td></td><td colspan = '999' style='text-align: center'>" + $(this).next().html() + "</td></tr>")
-            $(this).attr("src", "/Naffaell/Images/minus.png");
+            $(this).attr("src", "Images/minus.png");
         });
         $(document).on('click', '[src*=minus]', function (e) {
-            $(this).attr("src", "/Naffaell/Images/plus.png");
+            $(this).attr("src", "Images/plus.png");
             $(this).closest("tr").next().remove();
         });
         //$(document).ready(function () {
@@ -305,7 +305,7 @@
                                         </asp:TemplateField>
                                         <asp:TemplateField>
                                             <ItemTemplate>
-                                                <asp:Image ID="img" runat="server" Style="cursor: pointer" src="/Advace/Images/plus.png" />
+                                                <asp:Image ID="img" runat="server" Style="cursor: pointer" src="Images/plus.png" />
                                                 <asp:Panel ID="pnlDetails" runat="server" Style="display: none">
                                                     <table class="table table-condensed tableB" style="font-size: 12px; border-right: transparent; border-left: transparent; border: transparent;">
                                                         <tr>
@@ -459,7 +459,7 @@
                                         </asp:TemplateField>
                                         <asp:TemplateField>
                                             <ItemTemplate>
-                                                <asp:Image ID="img" runat="server" Style="cursor: pointer" src="/Advace/Images/plus.png" />
+                                                <asp:Image ID="img" runat="server" Style="cursor: pointer" src="Images/plus.png" />
                                                 <asp:Panel ID="pnlDetails" runat="server" Style="display: none">
                                                     <table class="table table-condensed tableB" style="font-size: 12px; border-right: transparent; border-left: transparent; border: transparent;"">
                                                         <tr>

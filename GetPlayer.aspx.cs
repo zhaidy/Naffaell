@@ -1008,7 +1008,7 @@ public partial class GetPlayer : System.Web.UI.Page
                     icon = "http://img.lolbox.duowan.com/champions/" + playedChamps.content[i].championName + "_40x40.jpg",
                     championName = playedChamps.content[i].championName,
                     championNameCN = playedChamps.content[i].championNameCN,
-                    winRate = playedChamps.content[i].winRate,
+                    winRate = playedChamps.content[i].winRate + "%",
                     matchStat = playedChamps.content[i].matchStat,
                     averageKDA = averageKDAString,
                     averageKDARating = playedChamps.content[i].averageKDARating,

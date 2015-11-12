@@ -23,9 +23,9 @@ public class GetPlayerService : System.Web.Services.WebService {
         return "Hello World";
     }
 
-    public string tier = "";
-    public string rank = "";
-    public string points = "";
+    private string tier = "";
+    private string rank = "";
+    private string points = "";
 
     private void sendRequest(string server, string playerId)
     {
@@ -68,7 +68,7 @@ public class GetPlayerService : System.Web.Services.WebService {
     {
         string _playerId = playerId;
         string _server = server;
-
+        sendRequest(_server, _playerId);
         player_profile _player_profile = new player_profile(); //Player Profile : player_id, server, fighting
         string url = "http://lolbox.duowan.com/playerDetail.php?serverName=" + server + "&playerName=" + playerId;
         string fighting = "";
@@ -115,7 +115,6 @@ public class GetPlayerService : System.Web.Services.WebService {
         _player_profile.fighting = fighting;
         _player_profile.icon = playerIcon;
         _player_profile.first_win = first_win;
-        _player_profile.level = level;
 
         //com_champ
         _player_profile.com_champ = new List<com_champ>();
@@ -235,7 +234,7 @@ public class GetPlayerService : System.Web.Services.WebService {
         }
 
         //get match list
-        string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + server + "&playerName=" + playerId;
+        string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + _server + "&playerName=" + _playerId;
         for (int i = 1; i <= 8; i++)
         {
             var getMatchHistoryWeb = new HtmlWeb();

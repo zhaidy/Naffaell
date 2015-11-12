@@ -115,6 +115,7 @@ public class GetPlayerService : System.Web.Services.WebService {
         _player_profile.fighting = fighting;
         _player_profile.icon = playerIcon;
         _player_profile.first_win = first_win;
+        _player_profile.level = level;
 
         //com_champ
         _player_profile.com_champ = new List<com_champ>();

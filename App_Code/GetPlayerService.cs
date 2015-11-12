@@ -106,7 +106,7 @@ public class GetPlayerService : System.Web.Services.WebService {
             && x.Attributes["class"].Value.Split().Contains("act"));
         foreach (HtmlNode child in firstWinNodes)
         {
-            first_win = child.InnerText.Replace("&nbsp;", "");
+            first_win = child.InnerText.Replace("&nbsp;", "").Replace(" ", "").Replace("\n", "");
         }
 
         //add profile

@@ -234,6 +234,8 @@ public class GetPlayerService : System.Web.Services.WebService {
             }
         }
 
+        //match_list
+        _player_profile.match_list_list = new List<match_list>();
         //get match list
         string matchListUrl = "http://lolbox.duowan.com/matchList.php?serverName=" + _server + "&playerName=" + _playerId;
         for (int i = 1; i <= 8; i++)
@@ -242,9 +244,6 @@ public class GetPlayerService : System.Web.Services.WebService {
             var doc = getMatchHistoryWeb.Load(matchListUrl + "&page=" + i.ToString());
 
             HtmlNode matchHistorybodyNode = doc.DocumentNode.SelectSingleNode("//body");
-
-            //match_list
-            _player_profile.match_list_list = new List<match_list>();
             IEnumerable<HtmlNode> historyNodes = doc.DocumentNode.Descendants().Where(x => x.Name == "div" && x.Attributes.Contains("class")
                 && x.Attributes["class"].Value.Split().Contains("l-box"));
             foreach (HtmlNode child in historyNodes)

@@ -7,6 +7,8 @@ using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
+using System.Web.Script.Serialization;
+using System.Web.Script.Services;
 using System.Web.Services;
 
 /// <summary>
@@ -64,7 +66,8 @@ public class GetPlayerService : System.Web.Services.WebService {
     }
 
     [WebMethod]
-    public player_profile GetPlayerProfile(string server, string playerId)
+    [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+    public string GetPlayerProfile(string server, string playerId)
     {
         string _playerId = playerId;
         string _server = server;
@@ -281,11 +284,12 @@ public class GetPlayerService : System.Web.Services.WebService {
                 }
             }
         }
-        return _player_profile;
+        return new JavaScriptSerializer().Serialize(_player_profile);
     }
 
     [WebMethod]
-    public match getMatch (string id, string server, string playerId)
+    [ScriptMethod(ResponseFormat = ResponseFormat.Json)]
+    public string getMatch (string id, string server, string playerId)
     {
         match _match = new match();
 
@@ -752,7 +756,7 @@ public class GetPlayerService : System.Web.Services.WebService {
             }
         }
 
-        return _match;
+        return new JavaScriptSerializer().Serialize(_match);
     }
 
     public class player_profile
